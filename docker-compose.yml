@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: postgres-dev
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n-dev
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_SECURE_COOKIE=false
