@@ -1,11 +1,11 @@
-package com.luanpaiva.observador_de_precos.modules.auth.repository;
+package com.luanpaiva.observador_de_precos.modules.users.repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.luanpaiva.observador_de_precos.modules.auth.entity.User;
+import com.luanpaiva.observador_de_precos.modules.users.entity.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);

@@ -1,4 +1,4 @@
-package com.luanpaiva.observador_de_precos.modules.auth.entity;
+package com.luanpaiva.observador_de_precos.modules.users.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
