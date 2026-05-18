@@ -28,7 +28,6 @@ public class AuthService {
         }
 
         User user = User.builder()
-                .id(UUID.randomUUID())
                 .name(dto.name())
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
