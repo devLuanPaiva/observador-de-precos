@@ -3,7 +3,6 @@ package com.luanpaiva.observador_de_precos.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,25 +24,24 @@ public class JwtService {
         Date exp = new Date(System.currentTimeMillis() + expirationMillis);
 
         return Jwts.builder()
-                .setSubject(userId.toString())
+                .subject(userId.toString())
                 .claim("name", name)
                 .claim("email", email)
                 .claim("type", type)
-                .setIssuedAt(now)
-                .setExpiration(exp)
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .issuedAt(now)
+                .expiration(exp)
+                .signWith(getSignInKey())
                 .compact();
     }
 
     public String generateToken(UUID userId, String name, String email, String type) {
         long expiration = "refresh".equalsIgnoreCase(type)
-                ? 1000L * 60 * 60 * 24 * 7 
-                : 1000L * 60 * 60; 
+                ? 1000L * 60 * 60 * 24 * 7
+                : 1000L * 60 * 60;
 
         return buildToken(userId, name, email, type, expiration);
     }
 
-    
     public String generateAccessToken(UUID userId, String name, String email) {
         return buildToken(userId, name, email, "access", 1000L * 60 * 60);
     }
@@ -53,12 +51,12 @@ public class JwtService {
     }
 
     public UUID extractUserId(String token) {
-    Claims claims = Jwts.parser()
-            .verifyWith(getSignInKey())
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
+        Claims claims = Jwts.parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
 
-    return UUID.fromString(claims.getSubject());
-}
+        return UUID.fromString(claims.getSubject());
+    }
 }
