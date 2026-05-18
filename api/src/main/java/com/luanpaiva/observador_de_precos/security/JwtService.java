@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Service
 public class JwtService {
-    @Value("${security.jwt.secret}")
+    @Value("${spring.security.jwt.secret}")
     private String jwtSecret;
 
     private SecretKey getSignInKey() {
