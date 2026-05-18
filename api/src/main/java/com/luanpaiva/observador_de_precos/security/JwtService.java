@@ -53,12 +53,12 @@ public class JwtService {
     }
 
     public UUID extractUserId(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    Claims claims = Jwts.parser()
+            .verifyWith(getSignInKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
 
-        return UUID.fromString(claims.getSubject());
-    }
+    return UUID.fromString(claims.getSubject());
+}
 }
