@@ -50,10 +50,20 @@ public class AuthService {
             throw new RuntimeException("Credenciais inválidas");
         }
 
-        String accessToken = jwtService.generateAccessToken(user.getId());
+        String accessToken = jwtService.generateAccessToken(
+            user.getId(),
+            user.getName(),
+            user.getEmail()
+        );
+
+        String refreshToken = jwtService.generateRefreshToken(
+            user.getId(),
+            user.getName(),
+            user.getEmail()
+        );
 
         return new AuthResponseDTO(
                 accessToken,
-                "refresh-token-placeholder");
+                refreshToken);
     }
 }
