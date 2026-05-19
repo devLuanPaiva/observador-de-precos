@@ -1,0 +1,2 @@
+
+declare const api_url: string;
