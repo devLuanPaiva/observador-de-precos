@@ -1,0 +1,51 @@
+@use "../../../../../styles/abstracts/colors" as *;
+@use "../../../../../styles/abstracts/typography" as *;
+@use "../../../../../styles/abstracts/variables" as *;
+
+.auth-form {
+    width: 100%;
+    max-width: 400px;
+
+    &__title {
+        font-size: 2rem;
+
+        margin-bottom: 2rem;
+
+        color: $color-white;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+            font-size: 0.9rem;
+            color: $color-text-muted;
+        }
+    }
+
+    &__button {
+        margin-top: 1rem;
+    }
+
+    &__error {
+        margin-bottom: 1rem;
+
+        padding: 1rem;
+
+        border-radius: $border-radius-md;
+
+        background: rgba(239, 68, 68, 0.15);
+
+        border: 1px solid rgba(239, 68, 68, 0.3);
+
+        color: #fca5a5;
+    }
+}

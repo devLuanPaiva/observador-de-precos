@@ -1,0 +1,55 @@
+<div class="auth-form">
+
+    <h2 class="auth-form__title">
+        {{ title }}
+    </h2>
+
+    @if (errorMessage) {
+
+    <div class="auth-form__error">
+        {{ errorMessage }}
+    </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        @if (isRegister) {
+
+        <div class="auth-form__field">
+
+            <label>Nome</label>
+
+            <input class="input" type="text" formControlName="name">
+
+        </div>
+        }
+
+        <div class="auth-form__field">
+
+            <label>Email</label>
+
+            <input class="input" type="email" formControlName="email">
+
+        </div>
+
+        <div class="auth-form__field">
+
+            <label>Senha</label>
+
+            <input class="input" type="password" formControlName="password">
+
+        </div>
+
+        <button class="btn btn--primary auth-form__button" [disabled]="loading">
+
+            @if (loading) {
+            Entrando...
+            } @else {
+            {{ buttonLabel }}
+            }
+
+        </button>
+
+    </form>
+
+</div>
