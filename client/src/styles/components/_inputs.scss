@@ -1,0 +1,24 @@
+@use "../abstracts/colors" as *;
+@use "../abstracts/variables" as *;
+
+.input {
+    width: 100%;
+
+    padding: 1rem;
+
+    background: $color-surface;
+
+    border: 1px solid $color-border;
+
+    border-radius: $border-radius-md;
+
+    color: $color-white;
+
+    transition: $transition-default;
+
+    &:focus {
+        border-color: $color-primary;
+
+        box-shadow: 0 0 0 3px rgba(242, 92, 5, 0.15);
+    }
+}
