@@ -1,0 +1,62 @@
+@use "../../../../../styles/abstracts/colors" as *;
+@use "../../../../../styles/abstracts/typography" as *;
+
+.auth-layout {
+    display: grid;
+
+    grid-template-columns: 1fr 480px;
+
+    min-height: 100vh;
+
+    &__branding {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: linear-gradient(135deg, #181c27 0%, #202534 100%);
+    }
+
+    &__content {
+        max-width: 420px;
+    }
+
+    &__title {
+        font-family: $font-heading;
+
+        font-size: 6rem;
+
+        margin: 0;
+
+        letter-spacing: 4px;
+
+        color: $color-primary;
+    }
+
+    &__subtitle {
+        color: $color-text-muted;
+
+        font-size: 1.1rem;
+    }
+
+    &__form {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 2rem;
+
+        background: $color-primary-dark;
+    }
+}
+
+@media (max-width: 900px) {
+    .auth-layout {
+        grid-template-columns: 1fr;
+
+        &__branding {
+            display: none;
+        }
+    }
+}
