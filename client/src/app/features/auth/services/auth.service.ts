@@ -48,4 +48,9 @@ export class AuthService {
   isAuthenticated() {
     return !!this.userToken();
   }
+
+  register(payload: { name: string; email: string; password: string }) {
+    return this.http.post(`${this.apiUrl()}/auth/register`, payload);
+
+  }
 }
