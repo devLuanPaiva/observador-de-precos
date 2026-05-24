@@ -1,6 +1,6 @@
 spring:
   application:
-    name: observador-de-precos-api
+    name: observador-de-precos
 
   datasource:
     url: jdbc:postgresql://localhost:5432/appdb
