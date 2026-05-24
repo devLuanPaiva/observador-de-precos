@@ -1,0 +1,33 @@
+@use "../abstracts/colors" as *;
+@use "../abstracts/typography" as *;
+
+body {
+    margin: 0;
+    padding: 0;
+
+    background: $color-primary-dark;
+    color: $color-white;
+
+    font-family: $font-body;
+
+    min-height: 100vh;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
