@@ -1,0 +1,35 @@
+@use "../abstracts/colors" as *;
+@use "../abstracts/variables" as *;
+
+.btn {
+    border: none;
+    outline: none;
+
+    cursor: pointer;
+
+    padding: 0.9rem 1.4rem;
+
+    border-radius: $border-radius-md;
+
+    transition: $transition-default;
+
+    font-weight: 600;
+
+    &--primary {
+        background: $color-primary;
+        color: $color-white;
+
+        &:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+    }
+
+    &--secondary {
+        background: transparent;
+
+        border: 1px solid $color-border;
+
+        color: $color-white;
+    }
+}

@@ -1,4 +1,4 @@
-package com.luanpaiva.observador_de_precos_api.controller;
+package com.luanpaiva.observador_de_precos.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
