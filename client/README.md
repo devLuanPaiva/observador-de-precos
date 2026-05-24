@@ -1,59 +1,219 @@
-# Client
+# 📱 Cliente - Observador de Preços
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.7.
+Frontend Angular da aplicação Observador de Preços com programação reativa usando NgRx, RxJS e Signals.
 
-## Development server
+## 📂 Organização de Pastas
 
-To start a local development server, run:
-
-```bash
-ng serve
+```
+client/src/
+├── app/
+│   ├── core/                    # Serviços singleton, guards e interceptadores globais
+│   │   ├── guards/              # Route guards (auth, unsaved changes)
+│   │   └── interceptors/        # HTTP interceptadores (headers, errors)
+│   │
+│   ├── features/                # Módulos de funcionalidades
+│   │   ├── auth/
+│   │   │   ├── guards/          # Auth guard (protege rotas)
+│   │   │   ├── interceptors/    # JWT token injection
+│   │   │   ├── models/          # Interfaces (LoginRequest, AuthResponse)
+│   │   │   ├── pages/           # Login e Register pages
+│   │   │   ├── services/        # AuthService (chamadas API)
+│   │   │   └── store/           # NgRx actions, reducers, selectors
+│   │   │
+│   │   └── products/            # Gerenciamento de produtos
+│   │       ├── models/          # Interfaces de produtos
+│   │       ├── pages/           # Product list e detail pages
+│   │       ├── services/        # ProductService
+│   │       └── store/           # Estado de produtos
+│   │
+│   ├── layout/                  # Componentes de layout (header, footer, sidebar)
+│   ├── shared/                  # Componentes e pipes reutilizáveis
+│   └── store/                   # Estado NgRx global
+│
+├── environments/                # Configurações por ambiente
+│   ├── environment.ts           # Produção
+│   └── environment.development.ts
+│
+├── styles/                      # Estilos SCSS
+│   ├── abstracts/               # Variáveis, mixins, funções
+│   ├── base/                    # Estilos globais
+│   └── components/              # Estilos de componentes
+│
+├── types.d.ts                   # Definições de tipos globais
+├── main.ts                      # Entrypoint da aplicação
+├── main.server.ts               # Entrypoint SSR
+├── server.ts                    # Configuração servidor Express
+└── index.html
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 📦 Instalação
 
 ```bash
-ng generate component component-name
+cd client
+
+# Instalar dependências
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## ▶️ Desenvolvimento
 
 ```bash
-ng generate --help
+# Iniciar servidor de desenvolvimento
+npm start
+
+# Acesso em: http://localhost:4200
 ```
 
-## Building
-
-To build the project run:
+## 🧪 Testes
 
 ```bash
-ng build
+# Executar testes unitários
+npm test
+
+# Testes com cobertura
+npm test -- --code-coverage
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## 🏗️ Build
 
 ```bash
-ng test
+# Build para produção
+npm run build
+
+# Build com SSR
+npm run build -- --ssr
+
+# Servir SSR localmente
+npm run serve:ssr:client
 ```
 
-## Running end-to-end tests
+## 🌍 Variáveis de Ambiente
 
-For end-to-end (e2e) testing, run:
+### Define Options (types.d.ts)
+
+```typescript
+// src/types.d.ts
+declare const api_url: string;  // URL da API Backend
+```
+
+### Configuração por Ambiente
+
+**Produção** - `src/environments/environment.ts`:
+```typescript
+export const environment = {
+  production: true,
+  apiUrl: 'https://api.observador-precos.com'
+};
+```
+
+**Desenvolvimento** - `src/environments/environment.development.ts`:
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api'
+};
+```
+
+## 📚 Stack de Desenvolvimento
+
+| Tecnologia | Versão | Propósito |
+|-----------|--------|----------|
+| Angular | 21.2 | Framework Web |
+| TypeScript | 5.9 | Linguagem tipada |
+| NgRx | 21.1 | Gerenciamento de estado |
+| RxJS | 7.8 | Programação reativa |
+| Angular Signals | - | Reatividade com signals |
+| Vitest | 4.0 | Testes unitários |
+| Jasmine | 6.0 | Assertions nos testes |
+| Angular SSR | 21.2 | Server-Side Rendering |
+
+## 🏗️ Arquitetura
+
+### Estrutura de Features
+
+Cada feature (`auth`, `products`) segue a seguinte estrutura:
+
+```
+feature/
+├── models/           # Interfaces e tipos TypeScript
+├── pages/            # Componentes de página (smart components)
+├── services/         # Serviços que chamam a API
+├── guards/           # Route guards
+├── interceptors/     # HTTP interceptadores
+└── store/            # NgRx (actions, reducers, effects, selectors)
+```
+
+### Programação Reativa
+
+- **RxJS**: Observables para requisições HTTP e event handling
+- **NgRx**: Gerenciamento centralizado de estado
+- **Signals**: Reatividade granular com o novo sistema de signals do Angular
+
+### Guards
+
+- **AuthGuard**: Protege rotas autenticadas, redireciona para login
+- **Interceptadores**: Injetam JWT token em todas requisições HTTP
+
+## 🔐 Autenticação
+
+1. Usuário faz login na página de login
+2. `AuthService` envia credenciais para a API
+3. API retorna JWT token
+4. Token é armazenado localmente
+5. `AuthInterceptor` injeta o token em todas as requisições
+6. Token é validado em cada requisição
+
+## 🎨 Estilos
+
+Os estilos seguem a arquitetura SCSS modularizada:
+
+```
+styles/
+├── abstracts/
+│   ├── _colors.scss      # Paleta de cores
+│   ├── _typography.scss  # Estilos de tipografia
+│   └── _variables.scss   # Variáveis reutilizáveis
+├── base/
+│   └── _global.scss      # Estilos globais
+└── components/
+    ├── _buttons.scss
+    └── _inputs.scss
+```
+
+## 🚀 Deploy
 
 ```bash
-ng e2e
+# Build de produção
+npm run build
+
+# Teste o build localmente
+npm run serve:ssr:client
+
+# Pronto para deploy em servidor Node.js
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🐛 Debugging
 
-## Additional Resources
+```bash
+# Usar Angular DevTools (extensão Chrome)
+# Usar Redux DevTools (extensão Chrome para NgRx)
+# Usar Chrome DevTools para debugging de Network
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 📝 Padrões de Código
+
+- **Naming**: camelCase para variáveis, PascalCase para classes/componentes
+- **Formatação**: Prettier (execute `npm run prettier`)
+- **Linting**: Angular Style Guide
+- **TypeScript**: Strict mode habilitado
+
+## 🤝 Contribuindo
+
+1. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+2. Commit com mensagens descritivas
+3. Push para a branch
+4. Abra um Pull Request
+
+---
+
+**Última atualização:** Maio de 2026
