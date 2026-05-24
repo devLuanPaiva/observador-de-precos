@@ -167,10 +167,10 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<testSourceDirectory>src/tests/java</testSourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<testResources>
 			<testResource>
-				<directory>src/tests/resources</directory>
+				<directory>src/test/resources</directory>
 			</testResource>
 		</testResources>
 	</build>
