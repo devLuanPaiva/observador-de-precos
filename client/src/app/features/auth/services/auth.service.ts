@@ -17,7 +17,7 @@ export class AuthService {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('userToken');
+      const token = sessionStorage.getItem('userToken');
       if (token) {
         this.userToken.set(token);
       }
@@ -30,8 +30,8 @@ export class AuthService {
       payload
     ).pipe(
       tap(response => {
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem('userToken', response.accessToken);
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('userToken', response.accessToken);
         }
         this.userToken.set(response.accessToken);
       })
@@ -39,8 +39,8 @@ export class AuthService {
   }
 
   logout() {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('userToken');
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('userToken');
     }
     this.userToken.set(null);
   }
