@@ -1,0 +1,39 @@
+@use "../../../../../styles/abstracts/colors" as *;
+
+.header {
+    height: 80px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 2rem;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+    background: rgba(24, 28, 39, 0.75);
+
+    backdrop-filter: blur(10px);
+
+    &__right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &__notifications {
+        width: 44px;
+        height: 44px;
+
+        border: none;
+
+        border-radius: 14px;
+
+        background: rgba(255, 255, 255, 0.05);
+
+        color: $color-white;
+
+        cursor: pointer;
+    }
+}
