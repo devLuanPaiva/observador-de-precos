@@ -1,0 +1,34 @@
+<aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
+
+    <div class="sidebar__top">
+
+        <h1 class="sidebar__logo">
+            OBS
+        </h1>
+
+        <button class="sidebar__collapse" (click)="collapsed.set(!collapsed())">
+            ☰
+        </button>
+
+    </div>
+
+    <nav class="sidebar__nav">
+
+        @for (item of items; track item.route) {
+
+        <a class="sidebar__item" [routerLink]="item.route">
+            <svg [lucideIcon]="item.icon" size="20"></svg>
+
+            @if (!collapsed()) {
+
+            <span>
+                {{ item.label }}
+            </span>
+            }
+
+        </a>
+        }
+
+    </nav>
+
+</aside>
