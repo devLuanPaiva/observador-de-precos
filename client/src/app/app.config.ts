@@ -11,6 +11,7 @@ import {
   provideLucideIcons, LucideBell, LucideLayoutDashboard,
   LucideChartColumn, LucidePackageSearch, LucideSettings
 } from '@lucide/angular';
+import { errorInterceptor } from '@core/api/interceptors/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,7 +20,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withFetch(),
       withInterceptors([
-        authInterceptor
+        authInterceptor,
+        errorInterceptor
       ])
     ),
     provideClientHydration(withEventReplay()),
