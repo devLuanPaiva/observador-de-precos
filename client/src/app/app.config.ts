@@ -12,6 +12,8 @@ import {
   LucideChartColumn, LucidePackageSearch, LucideSettings
 } from '@lucide/angular';
 import { errorInterceptor } from '@core/api/interceptors/error.interceptor';
+import { authReducer } from '@features/auth/store/auth.reducer';
+import { AuthEffects } from '@features/auth/store/auth.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,8 +27,12 @@ export const appConfig: ApplicationConfig = {
       ])
     ),
     provideClientHydration(withEventReplay()),
-    provideStore(),
-    provideEffects(),
+    provideStore({
+      auth: authReducer
+    }),
+    provideEffects([
+      AuthEffects
+    ]),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideLucideIcons(
       LucideLayoutDashboard,
