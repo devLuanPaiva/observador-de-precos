@@ -1,7 +1,7 @@
 <div class="user-menu">
 
     <button class="user-menu__trigger" (click)="open.set(!open())">
-        LA
+        {{ user()?.name?.charAt(0) }}
     </button>
 
     @if (open()) {
