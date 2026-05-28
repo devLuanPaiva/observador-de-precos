@@ -4,6 +4,7 @@ import * as AuthActions from '@features/auth/store/auth.actions';
 
 import { form, FormField, required, email } from '@angular/forms/signals';
 import { Store } from '@ngrx/store';
+import { selectAuthLoading } from '@features/auth/store/auth.selectors';
 
 @Component({
   selector: 'app-login-page',
@@ -14,7 +15,6 @@ import { Store } from '@ngrx/store';
 export class LoginPage {
   private readonly store = inject(Store);
 
-  isSubmitting = signal(false);
   submitError = signal<string | null>(null);
   submitSuccess = signal(false);
   submitDisabled = signal(false);
@@ -23,6 +23,11 @@ export class LoginPage {
     email: '',
     password: '',
   })
+
+  loading =
+    this.store.selectSignal(
+      selectAuthLoading
+    );
 
   authForm = form(
     this.authModel,
@@ -53,7 +58,6 @@ export class LoginPage {
       return;
     }
 
-    this.isSubmitting.set(true);
     this.submitError.set(null);
     this.submitDisabled.set(true);
     this.submitSuccess.set(false);
