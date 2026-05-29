@@ -2,16 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { AuthTokenService } from './auth-token.service';
 import { Router } from '@angular/router';
 import { AuthUser } from '../models/auth-user.model';
-
-interface JwtPayload {
-    sub?: string;
-    name?: string;
-    email?: string;
-    type?: string;
-    iat?: number;
-    exp?: number;
-    [key: string]: unknown;
-}
+import { decodeJwtPayload } from '@shared/utils/jwt.util';
 
 
 @Injectable({
@@ -54,30 +45,13 @@ export class AuthSessionService {
             this.userSignal.set(user);
         }
     }
-
+    // use shared decoder to avoid duplication
     private decodeJwtUser(token: string): AuthUser | null {
-        try {
-            const parts = token.split('.');
-            if (parts.length < 2) return null;
-            const payloadJson = AuthSessionService.safeBase64UrlDecode(parts[1]);
-            const parsed = JSON.parse(payloadJson) as JwtPayload | null;
-            if (!parsed) return null;
-            if (typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
-                return { id: parsed.sub, name: parsed.name, email: parsed.email };
-            }
-            return null;
-        } catch {
-            return null;
+        const parsed = decodeJwtPayload(token);
+        if (!parsed) return null;
+        if (typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
+            return { id: parsed.sub, name: parsed.name, email: parsed.email };
         }
+        return null;
     }
-
-    private static safeBase64UrlDecode(input: string): string {
-        input = input.replaceAll('-', '+').replaceAll('_', '/');
-        const pad = input.length % 4;
-        if (pad === 2) input += '==';
-        else if (pad === 3) input += '=';
-        else if (pad !== 0) input += '===='.slice(pad);
-        return atob(input);
-    }
-
 }

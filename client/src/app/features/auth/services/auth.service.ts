@@ -7,13 +7,9 @@ import { tap } from 'rxjs';
 import { AuthTokenService } from './auth-token.service';
 import { AuthSessionService } from './auth-session.service';
 import { AuthUser } from '../models/auth-user.model';
+import { decodeJwtPayload } from '@shared/utils/jwt.util';
 
-interface JwtPayload {
-  sub?: string;
-  name?: string;
-  email?: string;
-  [key: string]: unknown;
-}
+
 
 @Injectable({
   providedIn: 'root',
@@ -43,8 +39,9 @@ export class AuthService {
           this.tokenService.setRefreshToken(response.refreshToken);
         }
 
-        const user = this.decodeJwtUser(response.accessToken);
-        if (user) {
+        const parsed = decodeJwtPayload(response.accessToken);
+        if (parsed && typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
+          const user: AuthUser = { id: parsed.sub, name: parsed.name, email: parsed.email };
           this.session.setSession(user, response.accessToken, response.refreshToken);
         }
       })
@@ -64,28 +61,5 @@ export class AuthService {
 
   }
 
-  private decodeJwtUser(token: string): AuthUser | null {
-    try {
-      const parts = token.split('.');
-      if (parts.length < 2) return null;
-      const payloadJson = AuthService.safeBase64UrlDecode(parts[1]);
-      const parsed = JSON.parse(payloadJson) as JwtPayload | null;
-      if (!parsed) return null;
-      if (typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
-        return { id: parsed.sub, name: parsed.name, email: parsed.email };
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  }
-
-  private static safeBase64UrlDecode(input: string): string {
-    input = input.replaceAll('-', '+').replaceAll('_', '/');
-    const pad = input.length % 4;
-    if (pad === 2) input += '==';
-    else if (pad === 3) input += '=';
-    else if (pad !== 0) input += '===='.slice(pad);
-    return atob(input);
-  }
+  // decoding handled by shared util
 }
