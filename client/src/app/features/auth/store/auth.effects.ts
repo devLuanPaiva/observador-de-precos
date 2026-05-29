@@ -4,9 +4,9 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { AuthService } from "../services/auth.service";
 import { Router } from "@angular/router";
 import { ToastService } from "@core/ui/toast/service/toast.service";
-import { AuthSessionService } from "../services/auth-session.service";
 import { catchError, exhaustMap, map, of, tap } from "rxjs";
 import { ToastType } from "@core/ui/toast/models/toast.model";
+import { AuthSessionService } from "../services/auth-session.service";
 
 @Injectable()
 export class AuthEffects {
