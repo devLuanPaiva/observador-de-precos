@@ -4,7 +4,6 @@ import { isPlatformBrowser } from '@angular/common';
 import { LoginRequest } from '../models/login-request.model';
 import { AuthResponse } from '../models/auth-response.model';
 import { tap } from 'rxjs';
-import { AuthTokenService } from './auth-token.service';
 import { AuthSessionService } from './auth-session.service';
 import { AuthUser } from '../models/auth-user.model';
 import { decodeJwtPayload } from '@shared/utils/jwt.util';
@@ -19,7 +18,6 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   apiUrl = signal(api_url)
 
-  private readonly tokenService = inject(AuthTokenService);
   private readonly session = inject(AuthSessionService);
 
   constructor() {
@@ -34,15 +32,14 @@ export class AuthService {
       payload
     ).pipe(
       tap(response => {
-        if (isPlatformBrowser(this.platformId)) {
-          this.tokenService.setAccessToken(response.accessToken);
-          this.tokenService.setRefreshToken(response.refreshToken);
-        }
 
         const parsed = decodeJwtPayload(response.accessToken);
         if (parsed && typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
           const user: AuthUser = { id: parsed.sub, name: parsed.name, email: parsed.email };
+          
           this.session.setSession(user, response.accessToken, response.refreshToken);
+        } else {
+          this.session.setSession(null, response.accessToken, response.refreshToken);
         }
       })
     )
@@ -52,8 +49,8 @@ export class AuthService {
     this.session.clearSession();
   }
 
-  isAuthenticated() {
-    return this.session.authenticated();
+  isAuthenticated(): boolean {
+    return !!this.session.user();
   }
 
   register(payload: { name: string; email: string; password: string }) {
@@ -61,5 +58,4 @@ export class AuthService {
 
   }
 
-  // decoding handled by shared util
 }
