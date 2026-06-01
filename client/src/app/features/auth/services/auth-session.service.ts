@@ -19,10 +19,32 @@ export class AuthSessionService {
 
     readonly authenticated = computed(() => !!this.user());
 
-    setSession(user: AuthUser, token: string, refreshToken?: string): void {
-        this.tokenService.setAccessToken(token);
-        if (refreshToken) this.tokenService.setRefreshToken(refreshToken);
-        this.userSignal.set(user);
+    setSession(user: AuthUser | null, token?: string, refreshToken?: string): void {
+
+        if (token) {
+            this.tokenService.setAccessToken(token);
+        }
+        if (refreshToken) {
+            this.tokenService.setRefreshToken(refreshToken);
+        }
+
+        if (user) {
+            this.userSignal.set(user);
+            return;
+        }
+
+        if (token) {
+            const parsed = decodeJwtPayload(token);
+            if (parsed && typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
+                const decodedUser: AuthUser = { id: parsed.sub, name: parsed.name, email: parsed.email };
+                this.userSignal.set(decodedUser);
+                return;
+            }
+        }
+
+        if (user === null && !token && !refreshToken) {
+            this.userSignal.set(null);
+        }
     }
 
     clearSession(): void {
@@ -45,7 +67,6 @@ export class AuthSessionService {
             this.userSignal.set(user);
         }
     }
-    // use shared decoder to avoid duplication
     private decodeJwtUser(token: string): AuthUser | null {
         const parsed = decodeJwtPayload(token);
         if (!parsed) return null;
