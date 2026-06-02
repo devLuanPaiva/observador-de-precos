@@ -59,4 +59,12 @@ public class JwtService {
 
         return UUID.fromString(claims.getSubject());
     }
+
+    public Claims parseClaims(String refreshToken) {
+        return Jwts.parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(refreshToken)
+                .getPayload();
+    }
 }
