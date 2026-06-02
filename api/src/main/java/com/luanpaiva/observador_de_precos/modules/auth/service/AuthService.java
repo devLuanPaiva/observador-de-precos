@@ -2,10 +2,14 @@ package com.luanpaiva.observador_de_precos.modules.auth.service;
 
 import com.luanpaiva.observador_de_precos.modules.auth.dto.AuthResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.auth.dto.LoginRequestDTO;
+import com.luanpaiva.observador_de_precos.modules.auth.dto.RefreshTokenRequestDTO;
+import com.luanpaiva.observador_de_precos.modules.auth.dto.RefreshTokenResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.auth.dto.RegisterRequestDTO;
 import com.luanpaiva.observador_de_precos.modules.users.entity.User;
 import com.luanpaiva.observador_de_precos.modules.users.repository.UserRepository;
 import com.luanpaiva.observador_de_precos.security.JwtService;
+
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -14,62 +18,96 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+        private final UserRepository userRepository;
+        private final PasswordEncoder passwordEncoder;
+        private final JwtService jwtService;
 
-    public void register(RegisterRequestDTO dto) {
+        public void register(RegisterRequestDTO dto) {
 
-        if (userRepository.existsByEmail(dto.email())) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Email já cadastrado");
+                if (userRepository.existsByEmail(dto.email())) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.CONFLICT,
+                                        "Email já cadastrado");
+                }
+
+                User user = User.builder()
+                                .name(dto.name())
+                                .email(dto.email())
+                                .password(passwordEncoder.encode(dto.password()))
+                                .createdAt(LocalDateTime.now())
+                                .build();
+
+                userRepository.save(user);
         }
 
-        User user = User.builder()
-                .name(dto.name())
-                .email(dto.email())
-                .password(passwordEncoder.encode(dto.password()))
-                .createdAt(LocalDateTime.now())
-                .build();
+        public AuthResponseDTO login(LoginRequestDTO dto) {
 
-        userRepository.save(user);
-    }
+                User user = userRepository.findByEmail(dto.email())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.UNAUTHORIZED,
+                                                "Credenciais inválidos"));
 
-    public AuthResponseDTO login(LoginRequestDTO dto) {
+                boolean passwordMatches = passwordEncoder.matches(
+                                dto.password(),
+                                user.getPassword());
 
-        User user = userRepository.findByEmail(dto.email())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Credenciais inválidos"));
+                if (!passwordMatches) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.UNAUTHORIZED,
+                                        "Credenciais inválidos");
+                }
 
-        boolean passwordMatches = passwordEncoder.matches(
-                dto.password(),
-                user.getPassword());
+                String accessToken = jwtService.generateAccessToken(
+                                user.getId(),
+                                user.getName(),
+                                user.getEmail());
 
-        if (!passwordMatches) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Credenciais inválidos");
+                String refreshToken = jwtService.generateRefreshToken(
+                                user.getId(),
+                                user.getName(),
+                                user.getEmail());
+
+                return new AuthResponseDTO(
+                                accessToken,
+                                refreshToken);
         }
 
-        String accessToken = jwtService.generateAccessToken(
-                user.getId(),
-                user.getName(),
-                user.getEmail());
+        public RefreshTokenResponseDTO refresh(
+                        RefreshTokenRequestDTO dto) {
 
-        String refreshToken = jwtService.generateRefreshToken(
-                user.getId(),
-                user.getName(),
-                user.getEmail());
+                Claims claims = jwtService.parseClaims(
+                                dto.refreshToken());
 
-        return new AuthResponseDTO(
-                accessToken,
-                refreshToken);
-    }
+                String type = claims.get("type", String.class);
+
+                if (!"refresh".equals(type)) {
+
+                        throw new ResponseStatusException(
+                                        HttpStatus.UNAUTHORIZED,
+                                        "Refresh token inválido");
+                }
+
+                UUID userId = UUID.fromString(
+                                claims.getSubject());
+
+                User user = userRepository.findById(userId)
+                                .orElseThrow();
+
+                String newAccessToken = jwtService.generateAccessToken(
+
+                                user.getId(),
+
+                                user.getName(),
+
+                                user.getEmail());
+
+                return new RefreshTokenResponseDTO(
+                                newAccessToken);
+        }
 }
