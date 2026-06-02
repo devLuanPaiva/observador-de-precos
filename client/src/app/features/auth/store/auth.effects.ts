@@ -26,7 +26,7 @@ export class AuthEffects {
 
             }).pipe(
                 map(response => {
-                    this.session.setSession(response.user, response.accessToken);
+                    this.session.setSession(response.user, response.accessToken, response.refreshToken);
                     return AuthActions.loginSuccess({ user: response.user })
                 }),
                 catchError(error =>
