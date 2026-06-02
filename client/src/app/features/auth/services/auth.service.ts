@@ -3,10 +3,10 @@ import { inject, Injectable, signal, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { LoginRequest } from '../models/login-request.model';
 import { AuthResponse } from '../models/auth-response.model';
-import { tap } from 'rxjs';
 import { AuthSessionService } from './auth-session.service';
 import { AuthUser } from '../models/auth-user.model';
 import { decodeJwtPayload } from '@shared/utils/jwt.util';
+import { map } from 'rxjs';
 
 
 
@@ -31,16 +31,20 @@ export class AuthService {
       `${this.apiUrl()}/auth/login`,
       payload
     ).pipe(
-      tap(response => {
-
+      map(response => {
         const parsed = decodeJwtPayload(response.accessToken);
+        let user: AuthUser | null = null;
         if (parsed && typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
-          const user: AuthUser = { id: parsed.sub, name: parsed.name, email: parsed.email };
-          
+          user = { id: parsed.sub, name: parsed.name, email: parsed.email };
           this.session.setSession(user, response.accessToken, response.refreshToken);
         } else {
           this.session.setSession(null, response.accessToken, response.refreshToken);
         }
+
+        return {
+          ...response,
+          user
+        } as AuthResponse;
       })
     )
   }
