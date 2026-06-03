@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.MDC;
-
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -26,13 +28,30 @@ public class TraceIdFilter implements Filter {
         String traceId = UUID.randomUUID().toString();
         MDC.put("traceId", traceId);
 
+        String userId = "anonymous";
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null &&
+                auth.isAuthenticated() &&
+                !(auth instanceof AnonymousAuthenticationToken)) {
+            userId = auth.getName();
+        }
+
+        MDC.put("userId", userId);
+
         log.info(
                 "Request iniciada: {} {}",
                 httpRequest.getMethod(),
                 httpRequest.getRequestURI());
-        chain.doFilter(request, response);
 
-        MDC.clear();
+        try {
+            chain.doFilter(request, response);
+
+        } finally {
+
+            MDC.clear();
+        }
+
     }
 
 }
