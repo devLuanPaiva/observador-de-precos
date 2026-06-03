@@ -3,7 +3,6 @@ package com.luanpaiva.observador_de_precos.modules.users.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +10,7 @@ import java.util.UUID;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.luanpaiva.observador_de_precos.modules.users.enums.UserRole;
+import com.luanpaiva.observador_de_precos.shared.auditable.AuditableEntity;
 
 @Entity
 @Table(name = "users")
@@ -19,7 +19,7 @@ import com.luanpaiva.observador_de_precos.modules.users.enums.UserRole;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+public class User extends AuditableEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -36,9 +36,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

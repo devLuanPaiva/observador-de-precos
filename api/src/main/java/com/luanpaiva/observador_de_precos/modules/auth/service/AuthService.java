@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -42,7 +41,6 @@ public class AuthService {
                                 .email(dto.email())
                                 .role(UserRole.USER)
                                 .password(passwordEncoder.encode(dto.password()))
-                                .createdAt(LocalDateTime.now())
                                 .build();
 
                 userRepository.save(user);
