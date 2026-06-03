@@ -6,6 +6,7 @@ import com.luanpaiva.observador_de_precos.modules.auth.dto.RefreshTokenRequestDT
 import com.luanpaiva.observador_de_precos.modules.auth.dto.RefreshTokenResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.auth.dto.RegisterRequestDTO;
 import com.luanpaiva.observador_de_precos.modules.users.entity.User;
+import com.luanpaiva.observador_de_precos.modules.users.enums.UserRole;
 import com.luanpaiva.observador_de_precos.modules.users.repository.UserRepository;
 import com.luanpaiva.observador_de_precos.security.JwtService;
 
@@ -39,6 +40,7 @@ public class AuthService {
                 User user = User.builder()
                                 .name(dto.name())
                                 .email(dto.email())
+                                .role(UserRole.USER)
                                 .password(passwordEncoder.encode(dto.password()))
                                 .createdAt(LocalDateTime.now())
                                 .build();
@@ -66,12 +68,14 @@ public class AuthService {
                 String accessToken = jwtService.generateAccessToken(
                                 user.getId(),
                                 user.getName(),
-                                user.getEmail());
+                                user.getEmail(),
+                                user.getRole());
 
                 String refreshToken = jwtService.generateRefreshToken(
                                 user.getId(),
                                 user.getName(),
-                                user.getEmail());
+                                user.getEmail(),
+                                user.getRole());
 
                 return new AuthResponseDTO(
                                 accessToken,
@@ -105,7 +109,8 @@ public class AuthService {
 
                                 user.getName(),
 
-                                user.getEmail());
+                                user.getEmail(),
+                                user.getRole());
 
                 return new RefreshTokenResponseDTO(
                                 newAccessToken);

@@ -49,8 +49,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "João Silva",
                 "joao@example.com",
-                "senha123456"
-        );
+                "senha123456");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(dto.password())).thenReturn("encoded_password");
@@ -69,8 +68,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "João Silva",
                 "existing@example.com",
-                "senha123456"
-        );
+                "senha123456");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
@@ -89,8 +87,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "Maria Santos",
                 "maria@example.com",
-                "mySecurePassword"
-        );
+                "mySecurePassword");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode("mySecurePassword")).thenReturn("$2a$10$encoded_hash");
@@ -112,8 +109,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "Carlos Eduardo",
                 "carlos@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
@@ -135,8 +131,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "Ana Silva",
                 "ana@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
@@ -164,8 +159,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "Test User",
                 "test@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
@@ -173,8 +167,8 @@ class AuthServiceRegisterTests {
 
         authService.register(dto);
 
-        verify(jwtService, never()).generateAccessToken(any(), any(), any());
-        verify(jwtService, never()).generateRefreshToken(any(), any(), any());
+        verify(jwtService, never()).generateAccessToken(any(), any(), any(), any());
+        verify(jwtService, never()).generateRefreshToken(any(), any(), any(), any());
     }
 
     @Test
@@ -183,8 +177,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "User",
                 "test@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
@@ -201,8 +194,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "User",
                 "duplicate@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
@@ -219,8 +211,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "User",
                 "test@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
@@ -241,13 +232,11 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto1 = new RegisterRequestDTO(
                 "User One",
                 "user1@example.com",
-                "password123"
-        );
+                "password123");
         RegisterRequestDTO dto2 = new RegisterRequestDTO(
                 "User Two",
                 "user2@example.com",
-                "password456"
-        );
+                "password456");
 
         when(userRepository.existsByEmail(dto1.email())).thenReturn(false);
         when(userRepository.existsByEmail(dto2.email())).thenReturn(false);
