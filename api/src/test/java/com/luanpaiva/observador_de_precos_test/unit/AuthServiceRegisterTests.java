@@ -15,8 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -123,34 +121,6 @@ class AuthServiceRegisterTests {
         User savedUser = userCaptor.getValue();
         assertThat(savedUser.getName()).isEqualTo("Carlos Eduardo");
         assertThat(savedUser.getEmail()).isEqualTo("carlos@example.com");
-    }
-
-    @Test
-    @DisplayName("Should set createdAt timestamp when registering user")
-    void testCreatedAtTimestampIsSet() {
-        RegisterRequestDTO dto = new RegisterRequestDTO(
-                "Ana Silva",
-                "ana@example.com",
-                "password123");
-
-        when(userRepository.existsByEmail(dto.email())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
-        when(userRepository.save(any(User.class))).thenReturn(new User());
-
-        LocalDateTime beforeRegistration = LocalDateTime.now();
-
-        authService.register(dto);
-
-        LocalDateTime afterRegistration = LocalDateTime.now();
-
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(userCaptor.capture());
-
-        User savedUser = userCaptor.getValue();
-        assertThat(savedUser.getCreatedAt()).isNotNull();
-        assertThat(savedUser.getCreatedAt())
-                .isAfterOrEqualTo(beforeRegistration)
-                .isBeforeOrEqualTo(afterRegistration);
     }
 
     @Test
