@@ -2,6 +2,7 @@ package com.luanpaiva.observador_de_precos.modules.users.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +17,7 @@ import com.luanpaiva.observador_de_precos.shared.auditable.AuditableEntity;
 @Table(name = "users")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends AuditableEntity implements UserDetails {
