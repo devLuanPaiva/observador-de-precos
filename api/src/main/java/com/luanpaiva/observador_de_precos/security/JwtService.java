@@ -31,7 +31,7 @@ public class JwtService {
                 .claim("name", name)
                 .claim("email", email)
                 .claim("type", type)
-                .claim("role", role)
+                .claim("role", role.name())
                 .issuedAt(now)
                 .expiration(exp)
                 .signWith(getSignInKey())
@@ -70,5 +70,34 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(refreshToken)
                 .getPayload();
+    }
+
+    public boolean isRefreshToken(
+            String token) {
+
+        return "refresh".equals(
+                parseClaims(token)
+                        .get(
+                                "type",
+                                String.class));
+    }
+
+    public boolean isAccessToken(
+            String token) {
+
+        return "access".equals(
+                parseClaims(token)
+                        .get(
+                                "type",
+                                String.class));
+    }
+
+    public String extractRole(
+            String token) {
+
+        return parseClaims(token)
+                .get(
+                        "role",
+                        String.class);
     }
 }
