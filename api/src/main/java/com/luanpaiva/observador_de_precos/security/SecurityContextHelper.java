@@ -6,20 +6,40 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.luanpaiva.observador_de_precos.modules.users.entity.User;
+
 @Component
 public class SecurityContextHelper {
 
     public UUID getCurrentUserId() {
 
-        Authentication authentication = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
+        Authentication auth =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
 
-        if (authentication == null) {
-            throw new IllegalStateException("No authenticated user found in security context");
+        if (
+                auth == null ||
+                !auth.isAuthenticated()
+        ) {
+
+            throw new IllegalStateException(
+                    "Usuário não autenticado"
+            );
         }
 
-        return UUID.fromString(
-                authentication.getName());
+        Object principal =
+                auth.getPrincipal();
+
+        if (
+                principal instanceof User user
+        ) {
+
+            return user.getId();
+        }
+
+        throw new IllegalStateException(
+                "Usuário inválido"
+        );
     }
 }
