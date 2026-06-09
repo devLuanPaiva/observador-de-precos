@@ -10,7 +10,6 @@ import com.luanpaiva.observador_de_precos.modules.users.enums.UserRole;
 import com.luanpaiva.observador_de_precos.modules.users.repository.UserRepository;
 import com.luanpaiva.observador_de_precos.security.JwtService;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -83,34 +82,34 @@ public class AuthService {
         public RefreshTokenResponseDTO refresh(
                         RefreshTokenRequestDTO dto) {
 
-                Claims claims = jwtService.parseClaims(
-                                dto.refreshToken());
-
-                String type = claims.get("type", String.class);
-
-                if (!"refresh".equals(type)) {
+                if (!jwtService.isRefreshToken(
+                                dto.refreshToken())) {
 
                         throw new ResponseStatusException(
                                         HttpStatus.UNAUTHORIZED,
                                         "Refresh token inválido");
                 }
 
-                UUID userId = UUID.fromString(
-                                claims.getSubject());
+                UUID userId = jwtService.extractUserId(
+                                dto.refreshToken());
 
                 User user = userRepository.findById(userId)
                                 .orElseThrow();
 
-                String newAccessToken = jwtService.generateAccessToken(
-
+                String accessToken = jwtService.generateAccessToken(
                                 user.getId(),
-
                                 user.getName(),
+                                user.getEmail(),
+                                user.getRole());
 
+                String refreshToken = jwtService.generateRefreshToken(
+                                user.getId(),
+                                user.getName(),
                                 user.getEmail(),
                                 user.getRole());
 
                 return new RefreshTokenResponseDTO(
-                                newAccessToken);
+                                accessToken,
+                                refreshToken);
         }
 }
