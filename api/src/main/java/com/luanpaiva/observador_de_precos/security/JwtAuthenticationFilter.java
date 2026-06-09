@@ -40,6 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String token = authHeader.substring(7);
 
+            if (!jwtService.isAccessToken(token)) {
+
+                throw new BadCredentialsException(
+                        "Token inválido");
+            }
+
             UUID userId = jwtService.extractUserId(token);
 
             User user = userRepository.findById(userId)
@@ -56,8 +62,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .setAuthentication(authentication);
             }
 
-        } catch (Exception ignored) {
-            throw new BadCredentialsException("Token inválido");
+        } catch (Exception ex) {
+
+            SecurityContextHolder.clearContext();
+
+            throw new BadCredentialsException(
+                    "Token inválido");
         }
 
         filterChain.doFilter(request, response);
