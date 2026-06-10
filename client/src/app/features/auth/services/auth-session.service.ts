@@ -35,8 +35,8 @@ export class AuthSessionService {
 
         if (token) {
             const parsed = decodeJwtPayload(token);
-            if (parsed && typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
-                const decodedUser: AuthUser = { id: parsed.sub, name: parsed.name, email: parsed.email };
+            if (parsed && typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string' && typeof parsed.role === 'string') {
+                const decodedUser: AuthUser = { id: parsed.sub, name: parsed.name, email: parsed.email, role: parsed.role };
                 this.userSignal.set(decodedUser);
                 return;
             }
@@ -45,6 +45,11 @@ export class AuthSessionService {
         if (user === null && !token && !refreshToken) {
             this.userSignal.set(null);
         }
+    }
+    
+    getRefreshToken() {
+        return this.tokenService
+            .getRefreshToken();
     }
 
     clearSession(): void {
@@ -67,11 +72,12 @@ export class AuthSessionService {
             this.userSignal.set(user);
         }
     }
+    
     private decodeJwtUser(token: string): AuthUser | null {
         const parsed = decodeJwtPayload(token);
         if (!parsed) return null;
-        if (typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
-            return { id: parsed.sub, name: parsed.name, email: parsed.email };
+        if (typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string' && typeof parsed.role === 'string') {
+            return { id: parsed.sub, name: parsed.name, email: parsed.email, role: parsed.role };
         }
         return null;
     }
