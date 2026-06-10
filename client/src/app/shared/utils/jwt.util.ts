@@ -1,7 +1,10 @@
+import { UserRole } from "@features/auth/models/auth-user.model";
+
 interface JwtPayload {
     sub?: string;
     name?: string;
     email?: string;
+    role?: UserRole
     type?: string;
     iat?: number;
     exp?: number;
