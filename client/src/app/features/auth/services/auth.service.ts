@@ -62,4 +62,25 @@ export class AuthService {
 
   }
 
+  sessionRefreshToken() {
+    return this.session.getRefreshToken();
+  }
+
+  refreshToken() {
+    const refreshToken =
+      this.sessionRefreshToken();
+
+    return this.http.post<AuthResponse>(
+      `${this.apiUrl()}/auth/refresh`,
+      {
+        refreshToken
+      }
+    );
+  }
+
+  getRefreshToken() {
+  return this.session
+      .getRefreshToken();
+}
+
 }
