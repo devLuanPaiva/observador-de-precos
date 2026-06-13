@@ -4,9 +4,10 @@ import { isPlatformBrowser } from '@angular/common';
 import { LoginRequest } from '../models/login-request.model';
 import { AuthResponse } from '../models/auth-response.model';
 import { AuthSessionService } from './auth-session.service';
-import { AuthUser } from '../models/auth-user.model';
+import { AuthUser, UserRole } from '../models/auth-user.model';
 import { decodeJwtPayload } from '@shared/utils/jwt.util';
 import { map } from 'rxjs';
+
 
 
 @Injectable({
@@ -57,7 +58,12 @@ export class AuthService {
   }
 
   register(payload: { name: string; email: string; password: string }) {
-    return this.http.post(`${this.apiUrl()}/auth/register`, payload);
+    const newUser = {
+      ...payload,
+      role: UserRole.USER
+    }
+    
+    return this.http.post(`${this.apiUrl()}/auth/register`, newUser);
 
   }
 
