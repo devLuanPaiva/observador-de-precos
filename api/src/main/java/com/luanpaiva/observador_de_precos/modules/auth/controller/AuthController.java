@@ -6,6 +6,8 @@ import com.luanpaiva.observador_de_precos.modules.auth.dto.RefreshTokenRequestDT
 import com.luanpaiva.observador_de_precos.modules.auth.dto.RefreshTokenResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.auth.dto.RegisterRequestDTO;
 import com.luanpaiva.observador_de_precos.modules.auth.service.AuthService;
+import com.luanpaiva.observador_de_precos.modules.users.dto.UserResponseDTO;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,9 +21,10 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void register(
+    public UserResponseDTO register(
             @RequestBody @Valid RegisterRequestDTO dto) {
-        authService.register(dto);
+
+        return authService.register(dto);
     }
 
     @PostMapping("/login")

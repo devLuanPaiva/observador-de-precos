@@ -5,6 +5,7 @@ import com.luanpaiva.observador_de_precos.modules.auth.dto.LoginRequestDTO;
 import com.luanpaiva.observador_de_precos.modules.auth.dto.RefreshTokenRequestDTO;
 import com.luanpaiva.observador_de_precos.modules.auth.dto.RefreshTokenResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.auth.dto.RegisterRequestDTO;
+import com.luanpaiva.observador_de_precos.modules.users.dto.UserResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.users.entity.User;
 import com.luanpaiva.observador_de_precos.modules.users.enums.UserRole;
 import com.luanpaiva.observador_de_precos.modules.users.repository.UserRepository;
@@ -27,7 +28,7 @@ public class AuthService {
         private final PasswordEncoder passwordEncoder;
         private final JwtService jwtService;
 
-        public void register(RegisterRequestDTO dto) {
+        public UserResponseDTO register(RegisterRequestDTO dto) {
 
                 if (userRepository.existsByEmail(dto.email())) {
                         throw new ResponseStatusException(
@@ -42,7 +43,13 @@ public class AuthService {
                                 .password(passwordEncoder.encode(dto.password()))
                                 .build();
 
-                userRepository.save(user);
+                User savedUser = userRepository.save(user);
+
+                return new UserResponseDTO(
+                                savedUser.getId(),
+                                savedUser.getName(),
+                                savedUser.getEmail(),
+                                savedUser.getRole());
         }
 
         public AuthResponseDTO login(LoginRequestDTO dto) {
