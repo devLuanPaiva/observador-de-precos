@@ -1,9 +1,7 @@
 export enum UserRole {
-    ADMIN,
-
-    PREMIUM,
-
-    USER
+    ADMIN = 'ADMIN',
+    PREMIUM = 'PREMIUM',
+    USER = 'USER'
 }
 
 export interface AuthUser {
