@@ -9,7 +9,6 @@ import { decodeJwtPayload } from '@shared/utils/jwt.util';
 import { map } from 'rxjs';
 
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -34,8 +33,8 @@ export class AuthService {
       map(response => {
         const parsed = decodeJwtPayload(response.accessToken);
         let user: AuthUser | null = null;
-        if (parsed && typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string') {
-          user = { id: parsed.sub, name: parsed.name, email: parsed.email };
+        if (parsed && typeof parsed.sub === 'string' && typeof parsed.name === 'string' && typeof parsed.email === 'string' && typeof parsed.role === 'string') {
+          user = { id: parsed.sub, name: parsed.name, email: parsed.email, role: parsed.role };
           this.session.setSession(user, response.accessToken, response.refreshToken);
         } else {
           this.session.setSession(null, response.accessToken, response.refreshToken);
