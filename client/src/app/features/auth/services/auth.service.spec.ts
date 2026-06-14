@@ -34,7 +34,7 @@ describe('AuthService', () => {
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
 
-    localStorage.clear();
+    sessionStorage.clear();
   });
 
   afterEach(() => {
@@ -47,10 +47,10 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should load token from localStorage on service initialization', () => {
+  it('should load token from sessionStorage on service initialization', () => {
     TestBed.resetTestingModule();
     const testToken: string = 'stored-token';
-    localStorage.setItem('userToken', testToken);
+    sessionStorage.setItem('access_token', testToken);
     const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(testToken);
 
     TestBed.configureTestingModule({
@@ -64,13 +64,13 @@ describe('AuthService', () => {
 
     const newService: AuthService = TestBed.inject(AuthService);
 
-    expect(getItemSpy).toHaveBeenCalledWith('userToken');
-    expect(newService.userToken()).toBe(testToken);
+    expect(getItemSpy).toHaveBeenCalledWith('access_token');
+    expect(newService.access_token()).toBe(testToken);
 
     getItemSpy.mockRestore();
   });
 
-  it('should perform login and save token in localStorage and userToken signal', () => {
+  it('should perform login and save token in sessionStorage and access_token signal', () => {
     const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
     const loginRequest: LoginRequest = mockLoginRequest;
 
@@ -79,8 +79,8 @@ describe('AuthService', () => {
     const req = httpMock.expectOne((request) => request.url.includes('/auth/login'));
     req.flush(mockAuthResponse);
 
-    expect(setItemSpy).toHaveBeenCalledWith('userToken', mockAuthResponse.accessToken);
-    expect(service.userToken()).toBe(mockAuthResponse.accessToken);
+    expect(setItemSpy).toHaveBeenCalledWith('access_token', mockAuthResponse.accessToken);
+    expect(service.access_token()).toBe(mockAuthResponse.accessToken);
 
     setItemSpy.mockRestore();
   });
@@ -97,25 +97,25 @@ describe('AuthService', () => {
     req.flush(mockAuthResponse);
   });
 
-  it('should remove token from localStorage and clear userToken signal on logout', () => {
-    service.userToken.set('existing-token');
-    localStorage.setItem('userToken', 'existing-token');
+  it('should remove token from sessionStorage and clear access_token signal on logout', () => {
+    service.access_token.set('existing-token');
+    sessionStorage.setItem('access_token', 'existing-token');
     const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
 
     service.logout();
 
-    expect(removeItemSpy).toHaveBeenCalledWith('userToken');
-    expect(service.userToken()).toBeNull();
+    expect(removeItemSpy).toHaveBeenCalledWith('access_token');
+    expect(service.access_token()).toBeNull();
 
     removeItemSpy.mockRestore();
   });
 
   it('should return correct authentication state from isAuthenticated method', () => {
-    service.userToken.set(null);
+    service.access_token.set(null);
 
     expect(service.isAuthenticated()).toBe(false);
 
-    service.userToken.set('test-token');
+    service.access_token.set('test-token');
 
     expect(service.isAuthenticated()).toBe(true);
   });

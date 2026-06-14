@@ -1,0 +1,45 @@
+package com.luanpaiva.observador_de_precos.security;
+
+import java.util.UUID;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.luanpaiva.observador_de_precos.modules.users.entity.User;
+
+@Component
+public class SecurityContextHelper {
+
+    public UUID getCurrentUserId() {
+
+        Authentication auth =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        if (
+                auth == null ||
+                !auth.isAuthenticated()
+        ) {
+
+            throw new IllegalStateException(
+                    "Usuário não autenticado"
+            );
+        }
+
+        Object principal =
+                auth.getPrincipal();
+
+        if (
+                principal instanceof User user
+        ) {
+
+            return user.getId();
+        }
+
+        throw new IllegalStateException(
+                "Usuário inválido"
+        );
+    }
+}

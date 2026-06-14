@@ -15,8 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,8 +47,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "João Silva",
                 "joao@example.com",
-                "senha123456"
-        );
+                "senha123456");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(dto.password())).thenReturn("encoded_password");
@@ -69,8 +66,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "João Silva",
                 "existing@example.com",
-                "senha123456"
-        );
+                "senha123456");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
@@ -89,8 +85,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "Maria Santos",
                 "maria@example.com",
-                "mySecurePassword"
-        );
+                "mySecurePassword");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode("mySecurePassword")).thenReturn("$2a$10$encoded_hash");
@@ -112,8 +107,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "Carlos Eduardo",
                 "carlos@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
@@ -130,42 +124,12 @@ class AuthServiceRegisterTests {
     }
 
     @Test
-    @DisplayName("Should set createdAt timestamp when registering user")
-    void testCreatedAtTimestampIsSet() {
-        RegisterRequestDTO dto = new RegisterRequestDTO(
-                "Ana Silva",
-                "ana@example.com",
-                "password123"
-        );
-
-        when(userRepository.existsByEmail(dto.email())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
-        when(userRepository.save(any(User.class))).thenReturn(new User());
-
-        LocalDateTime beforeRegistration = LocalDateTime.now();
-
-        authService.register(dto);
-
-        LocalDateTime afterRegistration = LocalDateTime.now();
-
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(userCaptor.capture());
-
-        User savedUser = userCaptor.getValue();
-        assertThat(savedUser.getCreatedAt()).isNotNull();
-        assertThat(savedUser.getCreatedAt())
-                .isAfterOrEqualTo(beforeRegistration)
-                .isBeforeOrEqualTo(afterRegistration);
-    }
-
-    @Test
     @DisplayName("Should not interact with JwtService during registration")
     void testJwtServiceNotUsedDuringRegistration() {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "Test User",
                 "test@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
@@ -173,8 +137,8 @@ class AuthServiceRegisterTests {
 
         authService.register(dto);
 
-        verify(jwtService, never()).generateAccessToken(any(), any(), any());
-        verify(jwtService, never()).generateRefreshToken(any(), any(), any());
+        verify(jwtService, never()).generateAccessToken(any(), any(), any(), any());
+        verify(jwtService, never()).generateRefreshToken(any(), any(), any(), any());
     }
 
     @Test
@@ -183,8 +147,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "User",
                 "test@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
@@ -201,8 +164,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "User",
                 "duplicate@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
@@ -219,8 +181,7 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto = new RegisterRequestDTO(
                 "User",
                 "test@example.com",
-                "password123"
-        );
+                "password123");
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
@@ -241,13 +202,11 @@ class AuthServiceRegisterTests {
         RegisterRequestDTO dto1 = new RegisterRequestDTO(
                 "User One",
                 "user1@example.com",
-                "password123"
-        );
+                "password123");
         RegisterRequestDTO dto2 = new RegisterRequestDTO(
                 "User Two",
                 "user2@example.com",
-                "password456"
-        );
+                "password456");
 
         when(userRepository.existsByEmail(dto1.email())).thenReturn(false);
         when(userRepository.existsByEmail(dto2.email())).thenReturn(false);

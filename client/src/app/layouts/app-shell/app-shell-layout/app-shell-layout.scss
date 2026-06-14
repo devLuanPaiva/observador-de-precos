@@ -1,0 +1,26 @@
+@use "../../../../styles/abstracts/colors" as *;
+
+.app-shell {
+    display: flex;
+
+    min-height: 100vh;
+
+    background: $color-primary-dark;
+
+    &__content {
+        flex: 1;
+
+        display: flex;
+        flex-direction: column;
+
+        overflow: hidden;
+    }
+
+    &__main {
+        flex: 1;
+
+        padding: 2rem;
+
+        overflow-y: auto;
+    }
+}

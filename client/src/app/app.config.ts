@@ -7,6 +7,13 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { authInterceptor } from '@features/auth/interceptors/auth.interceptor';
+import {
+  provideLucideIcons, LucideBell, LucideLayoutDashboard,
+  LucideChartColumn, LucidePackageSearch, LucideSettings
+} from '@lucide/angular';
+import { errorInterceptor } from '@core/api/interceptors/error.interceptor';
+import { authReducer } from '@features/auth/store/auth.reducer';
+import { AuthEffects } from '@features/auth/store/auth.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,12 +22,24 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withFetch(),
       withInterceptors([
-        authInterceptor
+        authInterceptor,
+        errorInterceptor
       ])
     ),
     provideClientHydration(withEventReplay()),
-    provideStore(),
-    provideEffects(),
+    provideStore({
+      auth: authReducer
+    }),
+    provideEffects([
+      AuthEffects
+    ]),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    provideLucideIcons(
+      LucideLayoutDashboard,
+      LucideBell,
+      LucideChartColumn,
+      LucidePackageSearch,
+      LucideSettings
+    )
   ],
 };

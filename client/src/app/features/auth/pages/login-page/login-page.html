@@ -3,8 +3,7 @@
     <div class="field">
         <label>Email</label>
 
-        <input type="email" placeholder="Digite seu email"
-            [formField]="authForm.email" [class.invalid]="
+        <input type="email" placeholder="Digite seu email" [formField]="authForm.email" [class.invalid]="
                     authForm.email().touched() &&
                     authForm.email().invalid()
                 " />
@@ -27,9 +26,7 @@
     <div class="field">
         <label>Senha</label>
 
-        <input type="password" placeholder="Digite sua senha"
-            [formField]="authForm.password"
-            [class.invalid]="
+        <input type="password" placeholder="Digite sua senha" [formField]="authForm.password" [class.invalid]="
                         authForm.password().touched() &&
                         authForm.password().invalid()
                  " />
@@ -49,12 +46,9 @@
         }
     </div>
 
-    <button
-        class="submit-button"
-        [disabled]="!canSubmit() || isSubmitting()"
-        (click)="onSubmit()">
+    <button class="submit-button" [disabled]="!canSubmit() || loading()" (click)="onSubmit()">
 
-        @if (isSubmitting()) {
+        @if (loading()) {
         Entrando...
         } @else {
         Entrar

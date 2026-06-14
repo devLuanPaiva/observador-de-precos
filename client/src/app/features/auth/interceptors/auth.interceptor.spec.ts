@@ -22,45 +22,45 @@ describe('authInterceptor', () => {
 
     httpClient = TestBed.inject(HttpClient);
     httpMock = TestBed.inject(HttpTestingController);
-    localStorage.clear();
+    sessionStorage.clear();
     getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
   });
 
   afterEach(() => {
     httpMock.verify();
     getItemSpy.mockRestore();
-    localStorage.clear();
+    sessionStorage.clear();
   });
 
-  it('should add Authorization header with Bearer token when userToken exists in localStorage', () => {
+  it('should add Authorization header with Bearer token when access_token exists in sessionStorage', () => {
     getItemSpy.mockReturnValue(mockToken);
-    localStorage.setItem('userToken', mockToken);
+    sessionStorage.setItem('access_token', mockToken);
 
     httpClient.get<void>(testUrl).subscribe();
 
     const req = httpMock.expectOne(testUrl);
     expect(req.request.headers.has('Authorization')).toBe(true);
     expect(req.request.headers.get('Authorization')).toBe(`Bearer ${mockToken}`);
-    expect(getItemSpy).toHaveBeenCalledWith('userToken');
+    expect(getItemSpy).toHaveBeenCalledWith('access_token');
 
     req.flush(null);
   });
 
-  it('should NOT add Authorization header when userToken does not exist in localStorage', () => {
+  it('should NOT add Authorization header when access_token does not exist in sessionStorage', () => {
     getItemSpy.mockReturnValue(null);
 
     httpClient.get<void>(testUrl).subscribe();
 
     const req = httpMock.expectOne(testUrl);
     expect(req.request.headers.has('Authorization')).toBe(false);
-    expect(getItemSpy).toHaveBeenCalledWith('userToken');
+    expect(getItemSpy).toHaveBeenCalledWith('access_token');
 
     req.flush(null);
   });
 
   it('should pass the request to the next handler unchanged when token is added', () => {
     getItemSpy.mockReturnValue(mockToken);
-    localStorage.setItem('userToken', mockToken);
+    sessionStorage.setItem('access_token', mockToken);
     const testData: Record<string, string> = { id: '1', name: 'test' };
 
     httpClient.get<typeof testData>(testUrl).subscribe();
@@ -87,7 +87,7 @@ describe('authInterceptor', () => {
 
   it('should handle POST requests with Authorization header when token exists', () => {
     getItemSpy.mockReturnValue(mockToken);
-    localStorage.setItem('userToken', mockToken);
+    sessionStorage.setItem('access_token', mockToken);
     const postData: Record<string, string> = { email: 'test@example.com' };
 
     httpClient.post<void>(testUrl, postData).subscribe();
@@ -102,7 +102,7 @@ describe('authInterceptor', () => {
 
   it('should not modify existing headers when adding Authorization header', () => {
     getItemSpy.mockReturnValue(mockToken);
-    localStorage.setItem('userToken', mockToken);
+    sessionStorage.setItem('access_token', mockToken);
 
     httpClient.get<void>(testUrl, {
       headers: { 'Content-Type': 'application/json' },

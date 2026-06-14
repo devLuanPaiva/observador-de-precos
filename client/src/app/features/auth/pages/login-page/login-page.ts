@@ -1,23 +1,20 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-
-import { AuthService } from '@features/auth/services/auth.service';
-import { finalize } from 'rxjs';
+import * as AuthActions from '@features/auth/store/auth.actions';
 
 import { form, FormField, required, email } from '@angular/forms/signals';
+import { Store } from '@ngrx/store';
+import { selectAuthLoading } from '@features/auth/store/auth.selectors';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ ReactiveFormsModule, FormField],
+  imports: [ReactiveFormsModule, FormField],
   templateUrl: './login-page.html',
   styleUrl: './login-page.scss',
 })
 export class LoginPage {
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+  private readonly store = inject(Store);
 
-  isSubmitting = signal(false);
   submitError = signal<string | null>(null);
   submitSuccess = signal(false);
   submitDisabled = signal(false);
@@ -26,6 +23,11 @@ export class LoginPage {
     email: '',
     password: '',
   })
+
+  loading =
+    this.store.selectSignal(
+      selectAuthLoading
+    );
 
   authForm = form(
     this.authModel,
@@ -56,36 +58,16 @@ export class LoginPage {
       return;
     }
 
-    this.isSubmitting.set(true);
     this.submitError.set(null);
     this.submitDisabled.set(true);
     this.submitSuccess.set(false);
 
-    this.authService.login(
-      this.authModel()
-    ).pipe(
-      finalize(() => {
-        this.isSubmitting.set(false);
-        this.submitDisabled.set(false);
-        
-        this.authModel.set({
-          email: '',
-          password: '',
-        })
-        
-        this.authForm().reset();
-      })
-    ).subscribe({
-      next: () => {
-        this.submitSuccess.set(true);
-        this.router.navigate(['/dashboard']);
-      },
+    this.store.dispatch(
+      AuthActions.login({
+        email: this.authModel().email,
+        password: this.authModel().password
 
-      error: () => {
-        this.submitError.set(
-          'Credenciais inválidas. Por favor, verifique seu email e senha e tente novamente.'
-        )
-      }
-    })
+      })
+    )
   }
 }
