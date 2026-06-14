@@ -19,6 +19,10 @@ export class AuthSessionService {
 
     readonly authenticated = computed(() => !!this.user());
 
+    constructor() {
+        this.hydrateSession();
+    }
+
     setSession(user: AuthUser | null, token?: string, refreshToken?: string): void {
 
         if (token) {
@@ -46,7 +50,7 @@ export class AuthSessionService {
             this.userSignal.set(null);
         }
     }
-    
+
     getRefreshToken() {
         return this.tokenService
             .getRefreshToken();
@@ -65,14 +69,16 @@ export class AuthSessionService {
     hydrateSession() {
         const token = this.tokenService.getAccessToken();
 
-        if (!token) return;
+        if (!token) {
+            return;
+        }
 
         const user = this.decodeJwtUser(token);
         if (user) {
             this.userSignal.set(user);
         }
     }
-    
+
     private decodeJwtUser(token: string): AuthUser | null {
         const parsed = decodeJwtPayload(token);
         if (!parsed) return null;
