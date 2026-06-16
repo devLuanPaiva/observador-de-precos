@@ -13,9 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.luanpaiva.observador_de_precos.modules.products.dto.CreateProductRequestDTO;
+import com.luanpaiva.observador_de_precos.modules.products.dto.ProductFilterDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.ProductResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.UpdateProductRequestDTO;
 import com.luanpaiva.observador_de_precos.modules.products.service.ProductService;
@@ -39,12 +41,40 @@ public class ProductController {
 
     @GetMapping
     public Page<ProductResponseDTO> findAll(
-            @RequestParam(required = false) String search,
+
+            @RequestParam(required = false) String title,
+
+            @RequestParam(required = false) String url,
+
+            @RequestParam(required = false) String store,
+
+            @RequestParam(required = false) String sku,
+
+            @RequestParam(required = false) Boolean active,
+
+            @RequestParam(required = false) Boolean available,
+
+            @RequestParam(required = false) BigDecimal currentPriceEq,
+
+            @RequestParam(required = false) BigDecimal currentPriceGt,
+
+            @RequestParam(required = false) BigDecimal currentPriceLt,
 
             Pageable pageable) {
 
+        ProductFilterDTO filter = new ProductFilterDTO(
+                title,
+                url,
+                store,
+                sku,
+                active,
+                available,
+                currentPriceEq,
+                currentPriceGt,
+                currentPriceLt);
+
         return productService.findAll(
-                search,
+                filter,
                 pageable);
     }
 

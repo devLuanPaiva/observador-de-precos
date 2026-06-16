@@ -3,6 +3,7 @@ package com.luanpaiva.observador_de_precos.modules.products.service;
 import java.util.UUID;
 
 import com.luanpaiva.observador_de_precos.modules.products.dto.CreateProductRequestDTO;
+import com.luanpaiva.observador_de_precos.modules.products.dto.ProductFilterDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.ProductResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.UpdateProductRequestDTO;
 
@@ -21,7 +22,7 @@ public interface ProductService {
             UUID id);
 
     Page<ProductResponseDTO> findAll(
-            String search,
+            ProductFilterDTO filter,
             Pageable pageable);
 
     void delete(

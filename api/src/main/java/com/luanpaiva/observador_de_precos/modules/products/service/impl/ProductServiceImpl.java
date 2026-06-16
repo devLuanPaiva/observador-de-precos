@@ -9,119 +9,144 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.luanpaiva.observador_de_precos.modules.products.dto.CreateProductRequestDTO;
+import com.luanpaiva.observador_de_precos.modules.products.dto.ProductFilterDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.ProductResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.UpdateProductRequestDTO;
 import com.luanpaiva.observador_de_precos.modules.products.entity.Product;
 import com.luanpaiva.observador_de_precos.modules.products.mapper.ProductMapper;
 import com.luanpaiva.observador_de_precos.modules.products.repository.ProductRepository;
 import com.luanpaiva.observador_de_precos.modules.products.service.ProductService;
+import com.luanpaiva.observador_de_precos.modules.products.specification.ProductSpecification;
+import com.luanpaiva.observador_de_precos.modules.users.entity.User;
+import com.luanpaiva.observador_de_precos.security.SecurityContextHelper;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
+        private final ProductRepository productRepository;
+        private final ProductMapper productMapper;
+        private final SecurityContextHelper securityContextHelper;
 
-    @Override
-    public ProductResponseDTO createProduct(
-            CreateProductRequestDTO createProductRequestDTO) {
-        if (createProductRequestDTO.url() != null
-                && productRepository
-                        .findByUrl(createProductRequestDTO.url())
-                        .isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Produto já cadastrado");
+        @Override
+        public ProductResponseDTO createProduct(
+                        CreateProductRequestDTO dto) {
+
+                User currentUser = securityContextHelper.getCurrentUser();
+
+                Product product = Product.builder()
+                                .title(dto.title())
+                                .url(dto.url())
+                                .imageUrl(dto.imageUrl())
+                                .store(dto.store())
+                                .sku(dto.sku())
+                                .active(true)
+                                .available(true)
+                                .user(currentUser)
+                                .build();
+
+                Product saved = productRepository.save(product);
+
+                return productMapper.toResponse(saved);
         }
 
-        Product product = Product.builder()
-                .title(createProductRequestDTO.title())
-                .url(createProductRequestDTO.url())
-                .imageUrl(createProductRequestDTO.imageUrl())
-                .store(createProductRequestDTO.store())
-                .sku(createProductRequestDTO.sku())
-                .available(true)
-                .active(true)
-                .build();
+        @Override
+        public Page<ProductResponseDTO> findAll(
+                        ProductFilterDTO filter,
+                        Pageable pageable) {
 
-        return productMapper.toResponse(productRepository.save(product));
-    }
+                UUID userId = securityContextHelper.getCurrentUserId();
 
-    @Override
-    public ProductResponseDTO update(
-            UUID id,
-            UpdateProductRequestDTO dto) {
+                return productRepository
+                                .findAll(
+                                                ProductSpecification.filter(
+                                                                userId,
+                                                                filter),
+                                                pageable)
+                                .map(productMapper::toResponse);
+        }
 
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Produto não encontrado"));
+        @Override
+        public ProductResponseDTO update(
+                        UUID id,
+                        UpdateProductRequestDTO dto) {
 
-        if (dto.title() != null)
-            product.setTitle(dto.title());
+                UUID currentUserId = securityContextHelper.getCurrentUserId();
 
-        if (dto.imageUrl() != null)
-            product.setImageUrl(dto.imageUrl());
-
-        if (dto.store() != null)
-            product.setStore(dto.store());
-
-        if (dto.active() != null)
-            product.setActive(dto.active());
-
-        return productMapper.toResponse(
-                productRepository.save(product));
-    }
-
-    @Override
-    public ProductResponseDTO findById(
-            UUID id) {
-
-        return productMapper
-                .toResponse(
-                        productRepository
-                                .findById(id)
-                                .orElseThrow(
-                                        () -> new ResponseStatusException(
+                Product product = productRepository.findById(id)
+                                .orElseThrow(() -> new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND,
-                                                "Produto não encontrado")));
-    }
+                                                "Produto não encontrado"));
 
-    @Override
-    public Page<ProductResponseDTO> findAll(
-            String search,
-            Pageable pageable) {
+                if (!product.getUser().getId().equals(currentUserId)) {
 
-        Page<Product> page;
+                        throw new ResponseStatusException(
+                                        HttpStatus.FORBIDDEN,
+                                        "Acesso negado");
+                }
 
-        if (search == null ||
-                search.isBlank()) {
+                if (dto.title() != null) {
+                        product.setTitle(dto.title());
+                }
 
-            page = productRepository.findAll(pageable);
+                if (dto.imageUrl() != null) {
+                        product.setImageUrl(dto.imageUrl());
+                }
 
-        } else {
+                if (dto.store() != null) {
+                        product.setStore(dto.store());
+                }
 
-            page = productRepository.findByTitleContainingIgnoreCase(
-                    search,
-                    pageable);
+                if (dto.active() != null) {
+                        product.setActive(dto.active());
+                }
+
+                Product updated = productRepository.save(product);
+
+                return productMapper.toResponse(updated);
         }
 
-        return page.map(
-                productMapper::toResponse);
-    }
+        @Override
+        public ProductResponseDTO findById(
+                        UUID id) {
 
-    @Override
-    public void delete(
-            UUID id) {
+                UUID currentUserId = securityContextHelper.getCurrentUserId();
 
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Produto não encontrado"));
+                Product product = productRepository.findById(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Produto não encontrado"));
 
-        productRepository.delete(product);
-    }
+                if (!product.getUser().getId().equals(currentUserId)) {
+
+                        throw new ResponseStatusException(
+                                        HttpStatus.FORBIDDEN,
+                                        "Acesso negado");
+                }
+
+                return productMapper.toResponse(product);
+        }
+
+        @Override
+        public void delete(
+                        UUID id) {
+
+                UUID currentUserId = securityContextHelper.getCurrentUserId();
+
+                Product product = productRepository.findById(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Produto não encontrado"));
+
+                if (!product.getUser().getId().equals(currentUserId)) {
+
+                        throw new ResponseStatusException(
+                                        HttpStatus.FORBIDDEN,
+                                        "Acesso negado");
+                }
+
+                productRepository.delete(product);
+        }
 
 }
