@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -60,9 +59,7 @@ public class ProductController {
 
             @RequestParam(required = false) BigDecimal currentPriceGt,
 
-            @RequestParam(required = false) BigDecimal currentPriceLt,
-
-            Pageable pageable) {
+            @RequestParam(required = false) BigDecimal currentPriceLt) {
 
         ProductFilterDTO filter = new ProductFilterDTO(
                 title,
@@ -76,8 +73,7 @@ public class ProductController {
                 currentPriceLt);
 
         return productService.findAll(
-                filter,
-                pageable);
+                filter);
     }
 
     @GetMapping("/{id}")

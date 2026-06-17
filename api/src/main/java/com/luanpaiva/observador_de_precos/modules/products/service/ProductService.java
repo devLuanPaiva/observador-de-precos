@@ -8,7 +8,6 @@ import com.luanpaiva.observador_de_precos.modules.products.dto.ProductResponseDT
 import com.luanpaiva.observador_de_precos.modules.products.dto.UpdateProductRequestDTO;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
     ProductResponseDTO createProduct(
@@ -22,8 +21,7 @@ public interface ProductService {
             UUID id);
 
     Page<ProductResponseDTO> findAll(
-            ProductFilterDTO filter,
-            Pageable pageable);
+            ProductFilterDTO filter);
 
     void delete(
             UUID id);

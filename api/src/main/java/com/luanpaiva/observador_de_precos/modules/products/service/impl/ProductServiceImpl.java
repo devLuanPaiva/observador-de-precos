@@ -53,8 +53,7 @@ public class ProductServiceImpl implements ProductService {
 
         @Override
         public Page<ProductResponseDTO> findAll(
-                        ProductFilterDTO filter,
-                        Pageable pageable) {
+                        ProductFilterDTO filter) {
 
                 UUID userId = securityContextHelper.getCurrentUserId();
 
@@ -63,7 +62,7 @@ public class ProductServiceImpl implements ProductService {
                                                 ProductSpecification.filter(
                                                                 userId,
                                                                 filter),
-                                                pageable)
+                                                Pageable.unpaged())
                                 .map(productMapper::toResponse);
         }
 
