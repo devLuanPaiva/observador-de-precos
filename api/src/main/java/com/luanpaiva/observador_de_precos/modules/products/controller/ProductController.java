@@ -23,9 +23,11 @@ import com.luanpaiva.observador_de_precos.modules.products.dto.UpdateProductRequ
 import com.luanpaiva.observador_de_precos.modules.products.service.ProductService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
