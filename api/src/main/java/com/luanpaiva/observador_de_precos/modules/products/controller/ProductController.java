@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.HttpStatus;
-import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import com.luanpaiva.observador_de_precos.modules.products.dto.CreateProductRequestDTO;
@@ -21,6 +21,8 @@ import com.luanpaiva.observador_de_precos.modules.products.dto.ProductFilterDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.ProductResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.UpdateProductRequestDTO;
 import com.luanpaiva.observador_de_precos.modules.products.service.ProductService;
+import com.luanpaiva.observador_de_precos.shared.responses.ApiResponse;
+import com.luanpaiva.observador_de_precos.shared.responses.ApiResponseFactory;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -35,13 +37,16 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponseDTO createProduct(
-            @RequestBody @Valid CreateProductRequestDTO createProductRequestDTO) {
-        return productService.createProduct(createProductRequestDTO);
+    public ApiResponse<ProductResponseDTO> create(
+            @RequestBody @Valid CreateProductRequestDTO dto) {
+
+        return ApiResponseFactory.success(
+                "Produto criado com sucesso",
+                productService.createProduct(dto));
     }
 
     @GetMapping
-    public Page<ProductResponseDTO> findAll(
+    public ApiResponse<List<ProductResponseDTO>> findAll(
 
             @RequestParam(required = false) String title,
 
@@ -72,24 +77,29 @@ public class ProductController {
                 currentPriceGt,
                 currentPriceLt);
 
-        return productService.findAll(
-                filter);
+        return ApiResponseFactory.list(
+                "Produtos encontrados",
+                productService.findAll(filter));
     }
 
     @GetMapping("/{id}")
-    public ProductResponseDTO findById(
+    public ApiResponse<ProductResponseDTO> findById(
             @PathVariable UUID id) {
 
-        return productService.findById(id);
+        return ApiResponseFactory.success(
+                "Produto encontrado",
+                productService.findById(id));
     }
 
     @PutMapping("/{id}")
-    public ProductResponseDTO update(
+    public ApiResponse<ProductResponseDTO> update(
             @PathVariable UUID id,
 
             @RequestBody UpdateProductRequestDTO dto) {
 
-        return productService.update(id, dto);
+        return ApiResponseFactory.success(
+                "Produto atualizado com sucesso",
+                productService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")

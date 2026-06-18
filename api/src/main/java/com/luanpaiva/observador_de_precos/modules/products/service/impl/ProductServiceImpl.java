@@ -1,11 +1,10 @@
 package com.luanpaiva.observador_de_precos.modules.products.service.impl;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.luanpaiva.observador_de_precos.modules.products.dto.CreateProductRequestDTO;
@@ -52,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         @Override
-        public Page<ProductResponseDTO> findAll(
+        public List<ProductResponseDTO> findAll(
                         ProductFilterDTO filter) {
 
                 UUID userId = securityContextHelper.getCurrentUserId();
@@ -61,9 +60,10 @@ public class ProductServiceImpl implements ProductService {
                                 .findAll(
                                                 ProductSpecification.filter(
                                                                 userId,
-                                                                filter),
-                                                Pageable.unpaged())
-                                .map(productMapper::toResponse);
+                                                                filter))
+                                .stream()
+                                .map(productMapper::toResponse)
+                                .toList();
         }
 
         @Override
@@ -110,19 +110,15 @@ public class ProductServiceImpl implements ProductService {
         public ProductResponseDTO findById(
                         UUID id) {
 
-                UUID currentUserId = securityContextHelper.getCurrentUserId();
+                UUID userId = securityContextHelper.getCurrentUserId();
 
-                Product product = productRepository.findById(id)
+                Product product = productRepository
+                                .findByIdAndUserId(
+                                                id,
+                                                userId)
                                 .orElseThrow(() -> new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND,
                                                 "Produto não encontrado"));
-
-                if (!product.getUser().getId().equals(currentUserId)) {
-
-                        throw new ResponseStatusException(
-                                        HttpStatus.FORBIDDEN,
-                                        "Acesso negado");
-                }
 
                 return productMapper.toResponse(product);
         }

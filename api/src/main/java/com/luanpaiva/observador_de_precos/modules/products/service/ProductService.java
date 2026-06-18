@@ -1,5 +1,6 @@
 package com.luanpaiva.observador_de_precos.modules.products.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.luanpaiva.observador_de_precos.modules.products.dto.CreateProductRequestDTO;
@@ -7,22 +8,21 @@ import com.luanpaiva.observador_de_precos.modules.products.dto.ProductFilterDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.ProductResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.products.dto.UpdateProductRequestDTO;
 
-import org.springframework.data.domain.Page;
-
 public interface ProductService {
-    ProductResponseDTO createProduct(
-            CreateProductRequestDTO createProductRequestDTO);
 
-    ProductResponseDTO update(
-            UUID id,
-            UpdateProductRequestDTO dto);
+        ProductResponseDTO createProduct(
+                        CreateProductRequestDTO dto);
 
-    ProductResponseDTO findById(
-            UUID id);
+        ProductResponseDTO update(
+                        UUID id,
+                        UpdateProductRequestDTO dto);
 
-    Page<ProductResponseDTO> findAll(
-            ProductFilterDTO filter);
+        ProductResponseDTO findById(
+                        UUID id);
 
-    void delete(
-            UUID id);
+        List<ProductResponseDTO> findAll(
+                        ProductFilterDTO filter);
+
+        void delete(
+                        UUID id);
 }
