@@ -15,6 +15,8 @@ import com.luanpaiva.observador_de_precos.modules.monitoring.dto.MonitoringFilte
 import com.luanpaiva.observador_de_precos.modules.monitoring.dto.MonitoringResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.monitoring.dto.UpdateMonitoringStatusDTO;
 import com.luanpaiva.observador_de_precos.modules.monitoring.service.MonitoringService;
+import com.luanpaiva.observador_de_precos.modules.price_history.dto.PriceHistoryResponseDTO;
+import com.luanpaiva.observador_de_precos.modules.price_history.service.PriceHistoryService;
 import com.luanpaiva.observador_de_precos.shared.responses.ApiResponse;
 import com.luanpaiva.observador_de_precos.shared.responses.ApiResponseFactory;
 
@@ -33,61 +35,70 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class MonitoringController {
-    private final MonitoringService monitoringService;
+        private final MonitoringService monitoringService;
+        private final PriceHistoryService priceHistoryService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<MonitoringResponseDTO> create(
-            @RequestBody @Valid CreateMonitoringRequestDTO dto) {
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        public ApiResponse<MonitoringResponseDTO> create(
+                        @RequestBody @Valid CreateMonitoringRequestDTO dto) {
 
-        return ApiResponseFactory.success(
-                "Monitoramento criado com sucesso",
-                monitoringService.createMonitoring(dto));
-    }
+                return ApiResponseFactory.success(
+                                "Monitoramento criado com sucesso",
+                                monitoringService.createMonitoring(dto));
+        }
 
-    @GetMapping
-    public ApiResponse<List<MonitoringResponseDTO>> findAll(
-                @RequestParam(required = false) Boolean active,
-                @RequestParam(required = false) Boolean notifyStock,
-                @RequestParam(required = false) Boolean notifyPromotion) {
+        @GetMapping
+        public ApiResponse<List<MonitoringResponseDTO>> findAll(
+                        @RequestParam(required = false) Boolean active,
+                        @RequestParam(required = false) Boolean notifyStock,
+                        @RequestParam(required = false) Boolean notifyPromotion) {
 
-        MonitoringFilterDTO filter = new MonitoringFilterDTO(
-                active,
-                notifyStock,
-                notifyPromotion
-        );
+                MonitoringFilterDTO filter = new MonitoringFilterDTO(
+                                active,
+                                notifyStock,
+                                notifyPromotion);
 
-        return ApiResponseFactory.list(
-                "Monitoramentos encontrados",
-                monitoringService.findAll(filter));
-    }
+                return ApiResponseFactory.list(
+                                "Monitoramentos encontrados",
+                                monitoringService.findAll(filter));
+        }
 
-    @GetMapping("/{id}")
-    public ApiResponse<MonitoringResponseDTO> findById(
-            @PathVariable UUID id) {
+        @GetMapping("/{id}/history")
+        public ApiResponse<List<PriceHistoryResponseDTO>> history(
+                        @PathVariable UUID id) {
 
-        return ApiResponseFactory.success(
-                "Monitoramento encontrado",
-                monitoringService.findById(id));
-    }
+                return ApiResponseFactory.list(
+                                "Histórico encontrado",
+                                priceHistoryService.findByMonitoringId(id));
+        }
 
-    @PatchMapping("/{id}/status")
-    public ApiResponse<MonitoringResponseDTO> updateStatus(
-            @PathVariable UUID id,
-            @RequestBody UpdateMonitoringStatusDTO dto) {
+        @GetMapping("/{id}")
+        public ApiResponse<MonitoringResponseDTO> findById(
+                        @PathVariable UUID id) {
 
-        return ApiResponseFactory.success(
-                "Status atualizado com sucesso",
-                monitoringService.updateStatus(
-                        id,
-                        dto.active()));
-    }
+                return ApiResponseFactory.success(
+                                "Monitoramento encontrado",
+                                monitoringService.findById(id));
+        }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-            @PathVariable UUID id) {
+        @PatchMapping("/{id}/status")
+        public ApiResponse<MonitoringResponseDTO> updateStatus(
+                        @PathVariable UUID id,
+                        @RequestBody UpdateMonitoringStatusDTO dto) {
 
-        monitoringService.delete(id);
-    }
+                return ApiResponseFactory.success(
+                                "Status atualizado com sucesso",
+                                monitoringService.updateStatus(
+                                                id,
+                                                dto.active()));
+        }
+
+        @DeleteMapping("/{id}")
+        @ResponseStatus(HttpStatus.NO_CONTENT)
+        public void delete(
+                        @PathVariable UUID id) {
+
+                monitoringService.delete(id);
+        }
 }
