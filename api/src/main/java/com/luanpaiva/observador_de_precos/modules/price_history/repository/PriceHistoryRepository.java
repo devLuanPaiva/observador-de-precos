@@ -11,5 +11,5 @@ import com.luanpaiva.observador_de_precos.modules.price_history.entity.PriceHist
 public interface PriceHistoryRepository
         extends JpaRepository<PriceHistory, UUID>, JpaSpecificationExecutor<PriceHistory> {
             
-    List<PriceHistory> findByMonitoringIdOrOrderByCheckedAtDesc(UUID monitoringId);
+    List<PriceHistory> findByMonitoringIdOrderByCheckedAtDesc(UUID monitoringId);
 }
