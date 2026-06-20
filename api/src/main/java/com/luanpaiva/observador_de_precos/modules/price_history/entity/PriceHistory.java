@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.luanpaiva.observador_de_precos.modules.products.entity.Product;
+import com.luanpaiva.observador_de_precos.modules.monitoring.entity.Monitoring;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,8 +34,8 @@ public class PriceHistory {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "monitoring_id")
+    private Monitoring monitoring;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
