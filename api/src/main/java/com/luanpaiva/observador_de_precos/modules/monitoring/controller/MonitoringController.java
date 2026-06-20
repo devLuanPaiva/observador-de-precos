@@ -2,11 +2,11 @@ package com.luanpaiva.observador_de_precos.modules.monitoring.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,7 +47,15 @@ public class MonitoringController {
 
     @GetMapping
     public ApiResponse<List<MonitoringResponseDTO>> findAll(
-            @ModelAttribute MonitoringFilterDTO filter) {
+                @RequestParam(required = false) Boolean active,
+                @RequestParam(required = false) Boolean notifyStock,
+                @RequestParam(required = false) Boolean notifyPromotion) {
+
+        MonitoringFilterDTO filter = new MonitoringFilterDTO(
+                active,
+                notifyStock,
+                notifyPromotion
+        );
 
         return ApiResponseFactory.list(
                 "Monitoramentos encontrados",
