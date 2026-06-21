@@ -20,4 +20,10 @@ public interface MonitoringRepository extends JpaRepository<Monitoring, UUID>, J
 
         List<Monitoring> findAllByUserId(UUID userId);
 
+        long countByUserId(UUID userId);
+
+        long countByUserIdAndActiveTrue(UUID userId);
+
+        long countByUserIdAndActiveFalse(UUID userId);
+
 }
