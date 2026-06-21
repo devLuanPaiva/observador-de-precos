@@ -17,4 +17,10 @@ public interface ProductRepository
         Optional<Product> findByIdAndUserId(
                         UUID id,
                         UUID userId);
+
+        long countByUserId(UUID userId);
+
+        long countByUserIdAndAvailableTrue(UUID userId);
+
+        long countByUserIdAndAvailableFalse(UUID userId);
 }
