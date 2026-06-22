@@ -10,7 +10,12 @@ import com.luanpaiva.observador_de_precos.modules.monitoring.entity.Monitoring;
 
 @Component
 public class AlertFactory {
-    public Alert createPriceDropAlert(Monitoring monitoring, BigDecimal oldPrice, BigDecimal newPrice) {
+
+    public Alert createPriceDropAlert(
+            Monitoring monitoring,
+            BigDecimal oldPrice,
+            BigDecimal newPrice) {
+
         return Alert.builder()
                 .monitoring(monitoring)
                 .type(AlertType.PRICE_DROP)
@@ -23,7 +28,10 @@ public class AlertFactory {
                 .build();
     }
 
-    public Alert createPriceRiseAlert(Monitoring monitoring, BigDecimal currentPrice) {
+    public Alert createTargetReachedAlert(
+            Monitoring monitoring,
+            BigDecimal currentPrice) {
+
         return Alert.builder()
                 .monitoring(monitoring)
                 .type(AlertType.TARGET_REACHED)
@@ -35,12 +43,14 @@ public class AlertFactory {
                 .build();
     }
 
-    public Alert createBackInStockAlert(Monitoring monitoring) {
+    public Alert createBackInStockAlert(
+            Monitoring monitoring) {
+
         return Alert.builder()
                 .monitoring(monitoring)
                 .type(AlertType.BACK_IN_STOCK)
                 .message(String.format(
-                        "O produto '%s' está disponível novamente",
+                        "O produto '%s' voltou ao estoque",
                         monitoring.getProduct().getTitle()))
                 .read(false)
                 .build();
@@ -58,6 +68,4 @@ public class AlertFactory {
                 .read(false)
                 .build();
     }
-
-    
 }
