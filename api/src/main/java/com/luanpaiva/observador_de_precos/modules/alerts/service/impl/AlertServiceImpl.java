@@ -1,5 +1,6 @@
 package com.luanpaiva.observador_de_precos.modules.alerts.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,9 +10,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.luanpaiva.observador_de_precos.modules.alerts.dto.AlertResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.alerts.entity.Alert;
+import com.luanpaiva.observador_de_precos.modules.alerts.factory.AlertFactory;
 import com.luanpaiva.observador_de_precos.modules.alerts.mapper.AlertMapper;
 import com.luanpaiva.observador_de_precos.modules.alerts.repository.AlertRepository;
 import com.luanpaiva.observador_de_precos.modules.alerts.service.AlertService;
+import com.luanpaiva.observador_de_precos.modules.monitoring.entity.Monitoring;
 import com.luanpaiva.observador_de_precos.security.SecurityContextHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ public class AlertServiceImpl implements AlertService {
     private final AlertRepository alertRepository;
     private final AlertMapper alertMapper;
     private final SecurityContextHelper securityContextHelper;
+    private final AlertFactory alertFactory;
 
     @Override
     public List<AlertResponseDTO> findAll() {
@@ -79,5 +83,47 @@ public class AlertServiceImpl implements AlertService {
 
         alerts.forEach(alert -> alert.setRead(true));
         alertRepository.saveAll(alerts);
+    }
+
+    @Override
+    public void createPriceDropAlert(
+            Monitoring monitoring,
+            BigDecimal oldPrice,
+            BigDecimal newPrice) {
+
+        alertRepository.save(
+                alertFactory.createPriceDropAlert(
+                        monitoring,
+                        oldPrice,
+                        newPrice));
+    }
+
+    @Override
+    public void createTargetReachedAlert(
+            Monitoring monitoring,
+            BigDecimal currentPrice) {
+
+        alertRepository.save(
+                alertFactory.createTargetReachedAlert(
+                        monitoring,
+                        currentPrice));
+    }
+
+    @Override
+    public void createBackInStockAlert(
+            Monitoring monitoring) {
+
+        alertRepository.save(
+                alertFactory.createBackInStockAlert(
+                        monitoring));
+    }
+
+    @Override
+    public void createPromotionAlert(
+            Monitoring monitoring) {
+
+        alertRepository.save(
+                alertFactory.createPromotionAlert(
+                        monitoring));
     }
 }
