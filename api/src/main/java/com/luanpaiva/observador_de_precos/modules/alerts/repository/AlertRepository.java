@@ -8,9 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.luanpaiva.observador_de_precos.modules.alerts.entity.Alert;
 
 public interface AlertRepository extends JpaRepository<Alert, UUID> {
-    List<Alert> findByMonitoringUserIdOrderByCreatedAtDesc(
-            UUID userId);
+        List<Alert> findByMonitoringUserIdOrderByCreatedAtDesc(
+                        UUID userId);
 
-    long countByMonitoringUserIdAndReadFalse(
-            UUID userId);
+        List<Alert> findByMonitoringUserIdAndReadFalseOrderByCreatedAtDesc(
+                        UUID userId);
+
+        long countByMonitoringUserIdAndReadFalse(
+                        UUID userId);
 }
