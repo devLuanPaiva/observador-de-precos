@@ -16,6 +16,8 @@ public record DashboardResponseDTO(
 
         Long unavailableProducts,
 
+        Long unreadAlerts,
+
         BigDecimal lowestPrice,
 
         BigDecimal highestPrice
