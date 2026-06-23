@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.luanpaiva.observador_de_precos.modules.alerts.repository.AlertRepository;
 import com.luanpaiva.observador_de_precos.modules.dashboard.dto.DashboardResponseDTO;
 import com.luanpaiva.observador_de_precos.modules.dashboard.service.DashboardService;
 import com.luanpaiva.observador_de_precos.modules.monitoring.repository.MonitoringRepository;
@@ -18,49 +19,54 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
 
-    private final ProductRepository productRepository;
+        private final ProductRepository productRepository;
 
-    private final MonitoringRepository monitoringRepository;
+        private final MonitoringRepository monitoringRepository;
 
-    private final PriceHistoryRepository priceHistoryRepository;
+        private final PriceHistoryRepository priceHistoryRepository;
 
-    private final SecurityContextHelper securityContextHelper;
+        private final AlertRepository alertRepository;
 
-    @Override
-    public DashboardResponseDTO getDashboard() {
+        private final SecurityContextHelper securityContextHelper;
 
-        UUID userId = securityContextHelper.getCurrentUserId();
+        @Override
+        public DashboardResponseDTO getDashboard() {
 
-        long totalProducts = productRepository.countByUserId(userId);
+                UUID userId = securityContextHelper.getCurrentUserId();
 
-        long totalMonitoring = monitoringRepository.countByUserId(userId);
+                long totalProducts = productRepository.countByUserId(userId);
 
-        long activeMonitoring = monitoringRepository.countByUserIdAndActiveTrue(userId);
+                long totalMonitoring = monitoringRepository.countByUserId(userId);
 
-        long inactiveMonitoring = monitoringRepository.countByUserIdAndActiveFalse(userId);
+                long activeMonitoring = monitoringRepository.countByUserIdAndActiveTrue(userId);
 
-        long availableProducts = productRepository.countByUserIdAndAvailableTrue(userId);
+                long inactiveMonitoring = monitoringRepository.countByUserIdAndActiveFalse(userId);
 
-        long unavailableProducts = productRepository.countByUserIdAndAvailableFalse(userId);
+                long availableProducts = productRepository.countByUserIdAndAvailableTrue(userId);
 
-        BigDecimal lowestPrice = priceHistoryRepository
-                .findFirstByMonitoringUserIdOrderByPriceAsc(userId)
-                .map(history -> history.getPrice())
-                .orElse(BigDecimal.ZERO);
+                long unavailableProducts = productRepository.countByUserIdAndAvailableFalse(userId);
 
-        BigDecimal highestPrice = priceHistoryRepository
-                .findFirstByMonitoringUserIdOrderByPriceDesc(userId)
-                .map(history -> history.getPrice())
-                .orElse(BigDecimal.ZERO);
+                long unreadAlerts = alertRepository.countByMonitoringUserIdAndReadFalse(userId);
 
-        return new DashboardResponseDTO(
-                totalProducts,
-                totalMonitoring,
-                activeMonitoring,
-                inactiveMonitoring,
-                availableProducts,
-                unavailableProducts,
-                lowestPrice,
-                highestPrice);
-    }
+                BigDecimal lowestPrice = priceHistoryRepository
+                                .findFirstByMonitoringUserIdOrderByPriceAsc(userId)
+                                .map(history -> history.getPrice())
+                                .orElse(BigDecimal.ZERO);
+
+                BigDecimal highestPrice = priceHistoryRepository
+                                .findFirstByMonitoringUserIdOrderByPriceDesc(userId)
+                                .map(history -> history.getPrice())
+                                .orElse(BigDecimal.ZERO);
+
+                return new DashboardResponseDTO(
+                                totalProducts,
+                                totalMonitoring,
+                                activeMonitoring,
+                                inactiveMonitoring,
+                                availableProducts,
+                                unavailableProducts,
+                                unreadAlerts,
+                                lowestPrice,
+                                highestPrice);
+        }
 }
