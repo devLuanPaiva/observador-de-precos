@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { LoginRequest } from '../models/login-request.model';
 import { AuthResponse } from '../models/auth-response.model';
 import { AuthSessionService } from './auth-session.service';
@@ -19,12 +18,6 @@ export class AuthService {
   apiUrl = signal(api_url)
 
   private readonly session = inject(AuthSessionService);
-
-  constructor() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.session.hydrateSession();
-    }
-  }
 
   login(payload: LoginRequest) {
     return this.http.post<AuthResponse>(

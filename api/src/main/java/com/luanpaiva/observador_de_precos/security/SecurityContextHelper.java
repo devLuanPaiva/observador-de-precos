@@ -11,35 +11,30 @@ import com.luanpaiva.observador_de_precos.modules.users.entity.User;
 @Component
 public class SecurityContextHelper {
 
-    public UUID getCurrentUserId() {
-
-        Authentication auth =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
-        if (
-                auth == null ||
-                !auth.isAuthenticated()
-        ) {
-
-            throw new IllegalStateException(
-                    "Usuário não autenticado"
-            );
+        public UUID getCurrentUserId() {
+                return getAuthenticatedUser().getId();
         }
 
-        Object principal =
-                auth.getPrincipal();
-
-        if (
-                principal instanceof User user
-        ) {
-
-            return user.getId();
+        public User getCurrentUser() {
+                return getAuthenticatedUser();
         }
 
-        throw new IllegalStateException(
-                "Usuário inválido"
-        );
-    }
+        private User getAuthenticatedUser() {
+
+                Authentication auth = SecurityContextHolder
+                                .getContext()
+                                .getAuthentication();
+
+                if (auth == null || !auth.isAuthenticated()) {
+                        throw new IllegalStateException("Usuário não autenticado");
+                }
+
+                Object principal = auth.getPrincipal();
+
+                if (principal instanceof User user) {
+                        return user;
+                }
+
+                throw new IllegalStateException("Usuário inválido");
+        }
 }

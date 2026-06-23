@@ -14,6 +14,8 @@ import {
 import { errorInterceptor } from '@core/api/interceptors/error.interceptor';
 import { authReducer } from '@features/auth/store/auth.reducer';
 import { AuthEffects } from '@features/auth/store/auth.effects';
+import { refreshInterceptor } from '@features/auth/interceptors/refresh.interceptor';
+import { loadingInterceptor } from '@core/loading/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,6 +25,8 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([
         authInterceptor,
+        refreshInterceptor,
+        loadingInterceptor,
         errorInterceptor
       ])
     ),
