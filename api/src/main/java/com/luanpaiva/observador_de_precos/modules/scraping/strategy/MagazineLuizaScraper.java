@@ -21,8 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class MagazineLuizaScraper
-                implements ScraperStrategy {
+public class MagazineLuizaScraper implements ScraperStrategy {
 
         private final ObjectMapper objectMapper;
 
@@ -33,24 +32,17 @@ public class MagazineLuizaScraper
         }
 
         @Override
-        public ScrapingResultDTO scrape(
-                        String url) {
+        public ScrapingResultDTO scrape(String url) {
 
                 Document document;
-
                 try {
-
                         document = Jsoup.connect(url)
-                                        .userAgent(
-                                                        "Mozilla/5.0")
+                                        .userAgent("Mozilla/5.0")
                                         .timeout(30000)
                                         .get();
 
                 } catch (Exception e) {
-
-                        throw new RuntimeException(
-                                        "Erro ao acessar Magalu",
-                                        e);
+                        throw new RuntimeException("Erro ao acessar Magalu", e);
                 }
 
                 ScrapingResultDTO fromJson = extractFromJsonLd(document);
@@ -58,9 +50,7 @@ public class MagazineLuizaScraper
                 if (fromJson != null) {
                         return fromJson;
                 }
-                return extractFromHtml(
-                                document,
-                                url);
+                return extractFromHtml(document, url);
         }
 
         private ScrapingResultDTO extractFromJsonLd(
@@ -68,17 +58,13 @@ public class MagazineLuizaScraper
 
                 try {
 
-                        Elements scripts = document.select(
-                                        "script[type=application/ld+json]");
+                        Elements scripts = document.select("script[type=application/ld+json]");
 
                         for (Element script : scripts) {
 
-                                JsonNode root = objectMapper.readTree(
-                                                script.html());
+                                JsonNode root = objectMapper.readTree(script.html());
 
-                                if (!"Product".equals(
-                                                root.path("@type")
-                                                                .asText())) {
+                                if (!"Product".equals(root.path("@type").asText())) {
 
                                         continue;
                                 }
@@ -90,29 +76,23 @@ public class MagazineLuizaScraper
 
                                 return new ScrapingResultDTO(
 
-                                                root.path("name")
-                                                                .asText(),
+                                                root.path("name").asText(),
 
                                                 price,
 
-                                                "InStock".equalsIgnoreCase(
-                                                                root.path("offers")
-                                                                                .path("availability")
-                                                                                .asText()),
+                                                "InStock".equalsIgnoreCase(root.path("offers")
+                                                                .path("availability")
+                                                                .asText()),
 
-                                                root.path("image")
-                                                                .asText(),
+                                                root.path("image").asText(),
 
                                                 "Magazine Luiza",
 
-                                                root.path("sku")
-                                                                .asText());
+                                                root.path("sku").asText());
                         }
 
                 } catch (Exception ignored) {
-                        throw new RuntimeException(
-                                        "Erro ao extrair dados do JSON-LD",
-                                        ignored);
+                        throw new RuntimeException("Erro ao extrair dados do JSON-LD", ignored);
                 }
 
                 return null;
@@ -148,14 +128,10 @@ public class MagazineLuizaScraper
                                 sku);
         }
 
-        private String extractSku(
-                        String url) {
+        private String extractSku(String url) {
 
-                Matcher matcher = Pattern.compile("/p/([^/]+)/")
-                                .matcher(url);
+                Matcher matcher = Pattern.compile("/p/([^/]+)/").matcher(url);
 
-                return matcher.find()
-                                ? matcher.group(1)
-                                : null;
+                return matcher.find() ? matcher.group(1) : null;
         }
 }
