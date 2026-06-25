@@ -8,7 +8,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,6 +20,7 @@ import com.luanpaiva.observador_de_precos.shared.utils.CurrencyUtils;
 import lombok.RequiredArgsConstructor;
 
 @Component
+@Order(1)
 @RequiredArgsConstructor
 public class MagazineLuizaScraper implements ScraperStrategy {
 
