@@ -2,6 +2,9 @@ package com.luanpaiva.observador_de_precos.modules.alerts.entity;
 
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.luanpaiva.observador_de_precos.modules.alerts.enums.AlertType;
 import com.luanpaiva.observador_de_precos.modules.monitoring.entity.Monitoring;
 import com.luanpaiva.observador_de_precos.shared.auditable.AuditableEntity;
@@ -28,6 +31,8 @@ public class Alert extends AuditableEntity {
     private Monitoring monitoring;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false, columnDefinition = "alert_type")
     private AlertType type;
 
     @Column(nullable = false, length = 500)
