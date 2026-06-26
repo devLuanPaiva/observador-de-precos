@@ -16,6 +16,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.luanpaiva.observador_de_precos.modules.scraping.dto.ScrapingResultDTO;
 import com.luanpaiva.observador_de_precos.shared.utils.CurrencyUtils;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +32,6 @@ public class MagazineLuizaScraper implements ScraperStrategy {
 
         @Override
         public boolean supports(String url) {
-
                 return url.contains("magazineluiza.com.br");
         }
 
@@ -36,14 +39,32 @@ public class MagazineLuizaScraper implements ScraperStrategy {
         public ScrapingResultDTO scrape(String url) {
 
                 Document document;
-                try {
-                        document = Jsoup.connect(url)
-                                        .userAgent("Mozilla/5.0")
-                                        .timeout(30000)
-                                        .get();
+
+                try (Playwright playwright = Playwright.create()) {
+
+                        Browser browser = playwright.chromium().launch(
+                                        new BrowserType.LaunchOptions()
+                                                        .setHeadless(true));
+
+                        Page page = browser.newPage();
+
+                        page.setExtraHTTPHeaders(
+                                        java.util.Map.of("Accept-Language", "pt-BR,pt;q=0.9", "Referer",
+                                                        "https://www.google.com"));
+
+                        page.navigate(url, new Page.NavigateOptions().setTimeout(30000));
+
+                        page.waitForLoadState();
+
+                        String html = page.content();
+
+                        document = Jsoup.parse(html);
+
+                        browser.close();
 
                 } catch (Exception e) {
-                        throw new RuntimeException("Erro ao acessar Magalu", e);
+
+                        throw new RuntimeException("Erro ao acessar Magalu: " + e.getMessage(), e);
                 }
 
                 ScrapingResultDTO fromJson = extractFromJsonLd(document);
@@ -51,11 +72,11 @@ public class MagazineLuizaScraper implements ScraperStrategy {
                 if (fromJson != null) {
                         return fromJson;
                 }
+
                 return extractFromHtml(document, url);
         }
 
-        private ScrapingResultDTO extractFromJsonLd(
-                        Document document) {
+        private ScrapingResultDTO extractFromJsonLd(Document document) {
 
                 try {
 
@@ -66,7 +87,6 @@ public class MagazineLuizaScraper implements ScraperStrategy {
                                 JsonNode root = objectMapper.readTree(script.html());
 
                                 if (!"Product".equals(root.path("@type").asText())) {
-
                                         continue;
                                 }
 
@@ -76,24 +96,22 @@ public class MagazineLuizaScraper implements ScraperStrategy {
                                                                 .asText("0"));
 
                                 return new ScrapingResultDTO(
-
                                                 root.path("name").asText(),
-
                                                 price,
-
-                                                "InStock".equalsIgnoreCase(root.path("offers")
-                                                                .path("availability")
-                                                                .asText()),
-
+                                                "InStock".equalsIgnoreCase(
+                                                                root.path("offers")
+                                                                                .path("availability")
+                                                                                .asText()),
                                                 root.path("image").asText(),
-
                                                 "Magazine Luiza",
-
                                                 root.path("sku").asText());
                         }
 
-                } catch (Exception ignored) {
-                        throw new RuntimeException("Erro ao extrair dados do JSON-LD", ignored);
+                } catch (Exception e) {
+
+                        e.printStackTrace();
+
+                        throw new RuntimeException("Erro ao acessar Magalu: " + e.getMessage(), e);
                 }
 
                 return null;
@@ -131,8 +149,11 @@ public class MagazineLuizaScraper implements ScraperStrategy {
 
         private String extractSku(String url) {
 
-                Matcher matcher = Pattern.compile("/p/([^/]+)/").matcher(url);
+                Matcher matcher = Pattern.compile("/p/([^/]+)/")
+                                .matcher(url);
 
-                return matcher.find() ? matcher.group(1) : null;
+                return matcher.find()
+                                ? matcher.group(1)
+                                : null;
         }
 }
