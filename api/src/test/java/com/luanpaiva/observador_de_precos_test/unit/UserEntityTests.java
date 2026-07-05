@@ -1,6 +1,8 @@
 package com.luanpaiva.observador_de_precos_test.unit;
 
 import com.luanpaiva.observador_de_precos.modules.users.entity.User;
+import com.luanpaiva.observador_de_precos.modules.users.enums.UserRole;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +19,7 @@ class UserEntityTests {
     void testCreateUserWithBuilder() {
         UUID userId = UUID.randomUUID();
         String name = "João Silva";
+        UserRole role = UserRole.USER;
         String email = "joao@example.com";
         String password = "hashed_password_123";
         LocalDateTime createdAt = LocalDateTime.now();
@@ -25,6 +28,7 @@ class UserEntityTests {
                 .id(userId)
                 .name(name)
                 .email(email)
+                .role(role)
                 .password(password)
                 .createdAt(createdAt)
                 .build();
@@ -35,6 +39,7 @@ class UserEntityTests {
         assertThat(user.getEmail()).isEqualTo(email);
         assertThat(user.getPassword()).isEqualTo(password);
         assertThat(user.getCreatedAt()).isEqualTo(createdAt);
+        assertThat(user.getRole()).isEqualTo(role);
     }
 
     @Test
@@ -48,6 +53,7 @@ class UserEntityTests {
         assertThat(user.getEmail()).isNull();
         assertThat(user.getPassword()).isNull();
         assertThat(user.getCreatedAt()).isNull();
+        assertThat(user.getRole()).isNull();
     }
 
     @Test
@@ -57,6 +63,7 @@ class UserEntityTests {
         User user = User.builder()
                 .name("Maria")
                 .email(email)
+                .role(UserRole.USER)
                 .password("password123")
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -67,18 +74,22 @@ class UserEntityTests {
     }
 
     @Test
-    @DisplayName("Should return empty authorities from UserDetails interface")
-    void testGetAuthoritiesReturnsEmpty() {
+    @DisplayName("Should return ROLE_USER authority")
+    void testGetAuthoritiesReturnsRoleAuthority() {
         User user = User.builder()
                 .name("Test User")
                 .email("test@example.com")
                 .password("password123")
+                .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .build();
 
         var authorities = user.getAuthorities();
 
-        assertThat(authorities).isEmpty();
+        assertThat(authorities).hasSize(1);
+
+        assertThat(authorities.iterator().next().getAuthority())
+                .isEqualTo("ROLE_USER");
     }
 
     @Test
@@ -89,11 +100,13 @@ class UserEntityTests {
         String name = "Carlos";
         String email = "carlos@example.com";
         String password = "encoded_password";
+        UserRole role = UserRole.ADMIN;
         LocalDateTime now = LocalDateTime.now();
 
         user.setId(userId);
         user.setName(name);
         user.setEmail(email);
+        user.setRole(role);
         user.setPassword(password);
         user.setCreatedAt(now);
 
@@ -128,6 +141,7 @@ class UserEntityTests {
                 .name("User1")
                 .email("user1@example.com")
                 .password("password1")
+                .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -136,6 +150,7 @@ class UserEntityTests {
                 .name("User2")
                 .email("user2@example.com")
                 .password("password2")
+                .role(UserRole.USER)
                 .createdAt(LocalDateTime.now())
                 .build();
 
